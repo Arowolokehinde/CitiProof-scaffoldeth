@@ -412,6 +412,47 @@ contract GovernmentProjectRegistry is Ownable, ReentrancyGuard {
         return _projectIdCounter;
     }
     
+    /**
+     * @dev Get all projects (public ones only for non-owners)
+     * @return Array of all public projects or all projects if called by owner
+     */
+    function getAllProjects() external view returns (Project[] memory) {
+        uint256[] memory projectIds = new uint256[](_projectIdCounter);
+        uint256 count = 0;
+        
+        // First, collect all accessible project IDs
+        for (uint256 i = 1; i <= _projectIdCounter; i++) {
+            Project storage project = projects[i];
+            // Include if project is public, or if caller is owner, or if caller is the project's government entity
+            if (project.isPublic || msg.sender == owner() || msg.sender == project.governmentEntity) {
+                projectIds[count] = i;
+                count++;
+            }
+        }
+        
+        // Create result array with actual count
+        Project[] memory result = new Project[](count);
+        for (uint256 i = 0; i < count; i++) {
+            result[i] = projects[projectIds[i]];
+        }
+        
+        return result;
+    }
+    
+    /**
+     * @dev Get all projects regardless of privacy (admin only)
+     * @return Array of all projects
+     */
+    function getAllProjectsAdmin() external view onlyOwner returns (Project[] memory) {
+        Project[] memory result = new Project[](_projectIdCounter);
+        
+        for (uint256 i = 1; i <= _projectIdCounter; i++) {
+            result[i - 1] = projects[i];
+        }
+        
+        return result;
+    }
+    
     function getProjectProgress(uint256 _projectId) external view validProjectId(_projectId) returns (
         uint256 totalMilestones,
         uint256 completedMilestones,

@@ -260,7 +260,7 @@ export function useProjectWithIpfs(projectId: number | null) {
   const [error, setError] = useState<string | null>(null);
 
   const { description: projectDescription, loading: descLoading, error: descError } = useIssueDescription(
-    project?.ipfsDescriptionHash || null
+    project?.description || null
   );
 
   const fetchProject = useCallback(async () => {

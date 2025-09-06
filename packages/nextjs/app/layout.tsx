@@ -1,5 +1,6 @@
 import React, { Suspense } from "react";
 import "./globals.css";
+import "@/lib/polyfills";
 import { IpfsProvider } from "@/components/ipfs/IpfsProvider";
 import { Toaster } from "@/components/ui/toaster";
 import { Web3Provider } from "@/providers/Web3Provider";

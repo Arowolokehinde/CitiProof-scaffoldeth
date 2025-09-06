@@ -3,6 +3,7 @@
 import type React from "react";
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { SubdomainRegistration } from "@/components/ens/SubdomainRegistration";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ import { useAccount } from "wagmi";
 
 export default function CitizenOnboarding() {
   const { address, isConnected } = useAccount();
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState(1);
   const [ensGenerated, setEnsGenerated] = useState(false);
   const [registeredSubdomain, setRegisteredSubdomain] = useState<string>("");
@@ -39,6 +41,10 @@ export default function CitizenOnboarding() {
   };
 
   const isOnboardingComplete = isConnected && ensGenerated;
+
+  const handleCompleteOnboarding = () => {
+    router.push("/projects");
+  };
 
   return (
     <div className="min-h-screen bg-[#F5F7FA] flex flex-col">
@@ -216,8 +222,9 @@ export default function CitizenOnboarding() {
                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
               }`}
               disabled={!isOnboardingComplete}
+              onClick={handleCompleteOnboarding}
             >
-              {isOnboardingComplete ? "Complete Onboarding" : "Complete All Steps Above"}
+              {isOnboardingComplete ? "Complete Onboarding & View Projects" : "Complete All Steps Above"}
             </Button>
           </div>
         </div>

@@ -5,6 +5,7 @@
 import { createPublicClient, http, parseAbiItem, keccak256, toHex } from "viem";
 import { sepolia } from "viem/chains";
 import { CitiProofIPFS } from "./ipfs";
+import ipfsService from "./ipfs";
 
 // Contract addresses from deployment
 export const CONTRACT_ADDRESSES = {
@@ -667,7 +668,7 @@ export class CitiProofContracts {
             console.log(`[getAllProjectsWithIPFS] Fetching documentation for project ${project.projectId} with hash: ${project.documentationHash}`);
             
             try {
-              const documentationData = await CitiProofIPFS.getData(project.documentationHash);
+              const documentationData = await ipfsService.retrieveData(project.documentationHash);
               if (documentationData) {
                 projectWithIPFS.documentationFiles = documentationData as any;
               }
@@ -724,25 +725,7 @@ export class CitiProofContracts {
     }
   }
 
-  static async getProjectsByStatus(status: ProjectStatus): Promise<bigint[]> {
-    try {
-      // Mock implementation - would need actual ABI method
-      return [BigInt(1), BigInt(2)];
-    } catch (error) {
-      console.error("Error fetching projects by status:", error);
-      return [];
-    }
-  }
 
-  static async getTotalProjects(): Promise<number> {
-    try {
-      // Mock implementation - would need actual ABI method
-      return 10;
-    } catch (error) {
-      console.error("Error fetching total projects:", error);
-      return 0;
-    }
-  }
 
   static async getActiveProposals(): Promise<bigint[]> {
     try {

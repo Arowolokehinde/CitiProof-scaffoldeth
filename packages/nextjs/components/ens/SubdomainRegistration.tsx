@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useENSAddress } from "@/hooks/useENS";
-import { AlertCircle, CheckCircle, Loader2, User } from "lucide-react";
+import { AlertCircle, CheckCircle, ExternalLink, Loader2, User } from "lucide-react";
+import { useWriteContract, useWaitForTransactionReceipt, useReadContract } from "wagmi";
+import { CONTRACT_ADDRESSES } from "@/lib/contracts";
+import { parseAbiItem } from "viem";
 
 interface SubdomainRegistrationProps {
   walletAddress?: string;
@@ -28,59 +30,131 @@ export function SubdomainRegistration({ walletAddress, onRegistrationComplete }:
     message: string;
   }>({ status: "idle", message: "" });
 
-  const { address: existingAddress, isLoading: isResolvingAddress } = useENSAddress(
-    desiredName ? `${desiredName}.citiproof.eth` : undefined,
-  );
+
+  // Check availability from smart contract
+  const { refetch: refetchAvailability } = useReadContract({
+    address: CONTRACT_ADDRESSES.CitizenIdentityRegistry as `0x${string}`,
+    abi: [
+      parseAbiItem("function isENSNameAvailable(string memory _ensName) external view returns (bool)")
+    ],
+    functionName: "isENSNameAvailable",
+    args: [`${desiredName}.citiproof.eth`],
+    enabled: false,
+  });
+
+  // Check if wallet is already registered
+  const { data: isWalletRegistered, refetch: refetchWalletStatus } = useReadContract({
+    address: CONTRACT_ADDRESSES.CitizenIdentityRegistry as `0x${string}`,
+    abi: [
+      parseAbiItem("function walletToCitizenId(address) external view returns (uint256)")
+    ],
+    functionName: "walletToCitizenId",
+    args: [walletAddress as `0x${string}`],
+    enabled: !!walletAddress,
+  });
+
+  const isNameValid = desiredName.length >= 3 && /^[a-zA-Z0-9-]+$/.test(desiredName);
 
   const checkAvailability = async () => {
-    if (!desiredName.trim()) return;
+    if (!desiredName.trim() || !isNameValid) return;
 
     setIsChecking(true);
-
-    // Simulate availability check
-    // In a real implementation, this would check against your smart contract
-    setTimeout(() => {
-      const isAvailable = !existingAddress && desiredName.length >= 3;
-      setAvailability({
-        available: isAvailable,
-        message: isAvailable
-          ? `${desiredName}.citiproof.eth is available!`
-          : existingAddress
-            ? `${desiredName}.citiproof.eth is already taken`
-            : "Name must be at least 3 characters long",
-      });
-      setIsChecking(false);
-    }, 1000);
-  };
-
-  const handleRegister = async () => {
-    if (!walletAddress || !availability?.available) return;
-
-    setIsRegistering(true);
-    setRegistrationStatus({ status: "pending", message: "Registering subdomain..." });
-
+    
     try {
-      // Simulate registration process
-      // In a real implementation, this would call your smart contract
-      await new Promise(resolve => setTimeout(resolve, 3000));
-
-      setRegistrationStatus({
-        status: "success",
-        message: `Successfully registered ${desiredName}.citiproof.eth!`,
+      // Check against smart contract
+      const result = await refetchAvailability();
+      const available = result.data as boolean;
+      
+      setAvailability({
+        available,
+        message: available
+          ? `${desiredName}.citiproof.eth is available!`
+          : `${desiredName}.citiproof.eth is already taken`,
       });
-
-      onRegistrationComplete?.(desiredName);
-    } catch {
-      setRegistrationStatus({
-        status: "error",
-        message: "Registration failed. Please try again.",
+    } catch (error) {
+      console.error("Error checking availability:", error);
+      setAvailability({
+        available: false,
+        message: "Error checking availability. Please try again.",
       });
     } finally {
+      setIsChecking(false);
+    }
+  };
+
+  // Contract interaction hooks
+  const { writeContract, data: hash, isPending, error } = useWriteContract();
+  const { isLoading: isConfirming, isSuccess: isConfirmed } = useWaitForTransactionReceipt({
+    hash,
+  });
+
+  const handleRegister = async () => {
+    if (!walletAddress || !availability?.available || !desiredName) return;
+
+    setIsRegistering(true);
+    setRegistrationStatus({ status: "pending", message: "Initiating transaction..." });
+
+    try {
+      // Call the registerCitizen function with the chosen subdomain
+      writeContract({
+        address: CONTRACT_ADDRESSES.CitizenIdentityRegistry as `0x${string}`,
+        abi: [
+          parseAbiItem("function registerCitizen(string memory _ensName, string memory _efpTokenId, uint256 _efpFollowers, uint256 _efpFollowing, string memory _ipfsMetadata) external")
+        ],
+        functionName: "registerCitizen",
+        args: [
+          `${desiredName}.citiproof.eth`, // ENS name
+          "", // EFP token ID (empty for now)
+          0n, // EFP followers
+          0n, // EFP following  
+          "" // IPFS metadata (empty for now)
+        ],
+      });
+
+      setRegistrationStatus({ 
+        status: "pending", 
+        message: "Transaction submitted, waiting for confirmation..." 
+      });
+
+    } catch (err: any) {
+      console.error("Registration error:", err);
+      setRegistrationStatus({
+        status: "error",
+        message: err?.message?.includes("Wallet already registered") 
+          ? "This wallet is already registered"
+          : err?.message?.includes("ENS name already registered")
+          ? "This ENS name is already taken"
+          : "Registration failed. Please try again.",
+      });
       setIsRegistering(false);
     }
   };
 
-  const isNameValid = desiredName.length >= 3 && /^[a-zA-Z0-9-]+$/.test(desiredName);
+  // Handle transaction states with useEffect
+  React.useEffect(() => {
+    if (isConfirmed && isRegistering && hash) {
+      setRegistrationStatus({
+        status: "success",
+        message: `Successfully registered ${desiredName}.citiproof.eth! View on Etherscan`,
+      });
+      onRegistrationComplete?.(desiredName);
+      setIsRegistering(false);
+    }
+  }, [isConfirmed, isRegistering, hash, desiredName, onRegistrationComplete]);
+
+  React.useEffect(() => {
+    if (error && isRegistering) {
+      setRegistrationStatus({
+        status: "error",
+        message: error.message.includes("Wallet already registered") 
+          ? "This wallet is already registered"
+          : error.message.includes("ENS name already registered")
+          ? "This ENS name is already taken"
+          : "Registration failed. Please try again.",
+      });
+      setIsRegistering(false);
+    }
+  }, [error, isRegistering]);
 
   return (
     <Card className="w-full max-w-2xl">
@@ -90,10 +164,21 @@ export function SubdomainRegistration({ walletAddress, onRegistrationComplete }:
           Register Your CitiProof Identity
         </CardTitle>
         <CardDescription>
-          Claim your unique .citiproof.eth subdomain to establish your verified citizen identity
+          Choose your unique .citiproof.eth subdomain to establish your verified citizen identity
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        {/* Show warning if wallet is already registered */}
+        {isWalletRegistered && Number(isWalletRegistered) > 0 && (
+          <Alert className="border-amber-200 bg-amber-50">
+            <AlertCircle className="w-4 h-4 text-amber-600" />
+            <AlertDescription className="text-amber-800">
+              <strong>Wallet Already Registered:</strong> This wallet is already registered with citizen ID #{Number(isWalletRegistered)}. 
+              Each wallet can only register once. You can update your ENS name later if needed.
+            </AlertDescription>
+          </Alert>
+        )}
+
         <div className="space-y-2">
           <Label htmlFor="subdomain">Choose Your Subdomain</Label>
           <div className="flex items-center space-x-2">
@@ -116,10 +201,10 @@ export function SubdomainRegistration({ walletAddress, onRegistrationComplete }:
             </div>
             <Button
               onClick={checkAvailability}
-              disabled={!isNameValid || isChecking || isResolvingAddress}
+              disabled={!isNameValid || isChecking}
               variant="outline"
             >
-              {isChecking || isResolvingAddress ? <Loader2 className="w-4 h-4 animate-spin" /> : "Check"}
+              {isChecking ? <Loader2 className="w-4 h-4 animate-spin" /> : "Check"}
             </Button>
           </div>
           {!isNameValid && desiredName && (
@@ -164,6 +249,7 @@ export function SubdomainRegistration({ walletAddress, onRegistrationComplete }:
           </div>
         )}
 
+
         {registrationStatus.status !== "idle" && (
           <Alert
             className={
@@ -190,22 +276,80 @@ export function SubdomainRegistration({ walletAddress, onRegistrationComplete }:
                     : "text-blue-800"
               }
             >
-              {registrationStatus.message}
+              <div className="flex items-center justify-between">
+                <span>{registrationStatus.message.replace(" View on Etherscan", "")}</span>
+                {registrationStatus.status === "success" && hash && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => window.open(`https://sepolia.etherscan.io/tx/${hash}`, '_blank')}
+                    className="ml-2"
+                  >
+                    <ExternalLink className="w-3 h-3 mr-1" />
+                    Verify on Etherscan
+                  </Button>
+                )}
+              </div>
             </AlertDescription>
           </Alert>
+        )}
+
+        {registrationStatus.status === "success" && hash && (
+          <div className="space-y-4 p-4 bg-green-50 rounded-lg border border-green-200">
+            <h3 className="font-semibold text-green-900">Registration Successful!</h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between items-center">
+                <span className="text-green-700">Your Domain:</span>
+                <code className="font-mono text-green-900">{desiredName}.citiproof.eth</code>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-green-700">Transaction:</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => window.open(`https://sepolia.etherscan.io/tx/${hash}`, '_blank')}
+                  className="text-green-700 hover:text-green-900 p-0 h-auto"
+                >
+                  {hash.slice(0, 10)}...{hash.slice(-8)}
+                  <ExternalLink className="w-3 h-3 ml-1" />
+                </Button>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-green-700">Contract:</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => window.open(`https://sepolia.etherscan.io/address/${CONTRACT_ADDRESSES.CitizenIdentityRegistry}`, '_blank')}
+                  className="text-green-700 hover:text-green-900 p-0 h-auto"
+                >
+                  View Contract
+                  <ExternalLink className="w-3 h-3 ml-1" />
+                </Button>
+              </div>
+            </div>
+          </div>
         )}
 
         <div className="flex gap-3">
           <Button
             onClick={handleRegister}
-            disabled={!availability?.available || !walletAddress || isRegistering}
+            disabled={
+              !availability?.available || 
+              !walletAddress || 
+              isRegistering || 
+              isPending || 
+              isConfirming ||
+              (isWalletRegistered && Number(isWalletRegistered) > 0)
+            }
             className="flex-1"
           >
-            {isRegistering ? (
+            {isRegistering || isPending || isConfirming ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                Registering...
+                {isPending ? "Confirm in wallet..." : isConfirming ? "Confirming..." : "Registering..."}
               </>
+            ) : isWalletRegistered && Number(isWalletRegistered) > 0 ? (
+              "Wallet Already Registered"
             ) : (
               "Register Subdomain"
             )}

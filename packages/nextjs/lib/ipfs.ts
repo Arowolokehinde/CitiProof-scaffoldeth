@@ -2,38 +2,79 @@
  * IPFS Integration for CitiProof
  * Handles data storage and retrieval from IPFS for detailed content
  */
-import { create } from "kubo-rpc-client";
 
 class IPFSService {
   private client: any;
   private isInitialized = false;
+  private isBrowser = typeof window !== 'undefined';
+  private createFn: any;
 
   constructor() {
-    // Initialize IPFS client with fallback to public gateways
+    // Don't initialize on server side, defer initialization
+  }
+
+  private async loadIPFS() {
+    if (this.createFn) return this.createFn;
+    
+    if (!this.isBrowser) {
+      throw new Error("IPFS not available on server side");
+    }
+
+    try {
+      const kuboModule = await import("kubo-rpc-client");
+      this.createFn = kuboModule.create;
+      return this.createFn;
+    } catch (err) {
+      console.error("[IPFS] Failed to load kubo-rpc-client:", err);
+      throw err;
+    }
+  }
+
+  private async initializeClient() {
+    if (this.client) return this.client;
+
+    const create = await this.loadIPFS();
+    
     try {
       // Try local IPFS node first
       this.client = create({ url: "http://127.0.0.1:5001" });
     } catch {
       console.warn("[IPFS] Local node not available, using Infura gateway");
-      // Fallback to Infura IPFS node
-      this.client = create({
-        host: "ipfs.infura.io",
-        port: 5001,
-        protocol: "https",
-        headers: {
-          authorization: process.env.NEXT_PUBLIC_INFURA_IPFS_AUTH || "",
-        },
-      });
+      try {
+        // Fallback to Infura IPFS node
+        this.client = create({
+          host: "ipfs.infura.io",
+          port: 5001,
+          protocol: "https",
+          headers: {
+            authorization: process.env.NEXT_PUBLIC_INFURA_IPFS_AUTH || "",
+          },
+        });
+      } catch (err) {
+        console.error("[IPFS] Failed to initialize IPFS client:", err);
+        throw err;
+      }
     }
+    
+    return this.client;
   }
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;
 
-    // Use a simpler approach - just initialize without testing connection
-    // Connection will be tested when actually used
-    this.isInitialized = true;
-    console.log("[IPFS] IPFS client initialized (connection will be tested on first use)");
+    if (!this.isBrowser) {
+      console.log("[IPFS] Server side - skipping initialization");
+      return;
+    }
+
+    try {
+      await this.initializeClient();
+      this.isInitialized = true;
+      console.log("[IPFS] IPFS client initialized (connection will be tested on first use)");
+    } catch (err) {
+      console.error("[IPFS] Failed to initialize:", err);
+      // Don't throw, just mark as not initialized
+    }
   }
 
   private async testConnection(): Promise<boolean> {
@@ -52,6 +93,11 @@ class IPFSService {
   }
 
   async storeData(data: any): Promise<string> {
+    if (!this.isBrowser) {
+      console.warn("[IPFS] Server side - cannot store data, returning mock hash");
+      return "bafkreig" + Math.random().toString(36).substring(2, 44);
+    }
+
     if (!this.isInitialized) {
       await this.initialize();
     }
@@ -59,8 +105,10 @@ class IPFSService {
     const jsonData = JSON.stringify(data, null, 2);
     
     // Try different IPFS endpoints with timeouts
+    const create = await this.loadIPFS();
+    const primaryClient = await this.initializeClient();
     const endpoints = [
-      { client: this.client, name: "primary" },
+      { client: primaryClient, name: "primary" },
       { 
         client: create({
           host: "ipfs.infura.io",
@@ -113,6 +161,11 @@ class IPFSService {
   }
 
   async storeFile(file: File): Promise<string> {
+    if (!this.isBrowser) {
+      console.warn("[IPFS] Server side - cannot store file, returning mock hash");
+      return "bafkreig" + Math.random().toString(36).substring(2, 44);
+    }
+
     if (!this.isInitialized) {
       await this.initialize();
     }
@@ -121,8 +174,10 @@ class IPFSService {
     const uint8Array = new Uint8Array(buffer);
     
     // Try different IPFS endpoints for file storage
+    const create = await this.loadIPFS();
+    const primaryClient = await this.initializeClient();
     const endpoints = [
-      { client: this.client, name: "primary" },
+      { client: primaryClient, name: "primary" },
       { 
         client: create({
           host: "ipfs.infura.io",
@@ -176,6 +231,11 @@ class IPFSService {
   }
 
   async retrieveData<T = any>(hash: string): Promise<T> {
+    if (!this.isBrowser) {
+      console.warn("[IPFS] Server side - cannot retrieve data, returning null");
+      return null as T;
+    }
+
     if (!this.isInitialized) {
       await this.initialize();
     }
@@ -196,7 +256,8 @@ class IPFSService {
       );
 
       const retrievalPromise = (async () => {
-        const stream = this.client.cat(hash);
+        const client = await this.initializeClient();
+        const stream = client.cat(hash);
         const chunks: Uint8Array[] = [];
 
         for await (const chunk of stream) {
@@ -231,12 +292,18 @@ class IPFSService {
   }
 
   async retrieveFile(hash: string): Promise<Blob> {
+    if (!this.isBrowser) {
+      console.warn("[IPFS] Server side - cannot retrieve file, returning empty blob");
+      return new Blob();
+    }
+
     if (!this.isInitialized) {
       await this.initialize();
     }
 
     try {
-      const stream = this.client.cat(hash);
+      const client = await this.initializeClient();
+      const stream = client.cat(hash);
       const chunks: Uint8Array[] = [];
 
       for await (const chunk of stream) {
