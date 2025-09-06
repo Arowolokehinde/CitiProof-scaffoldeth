@@ -1,0 +1,1562 @@
+{
+  "address": "0xA2B1623a4AdE119f510Bd33493D70A246737bcD8",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "initialOwner",
+          "type": "address"
+        },
+        {
+          "internalType": "address",
+          "name": "_citizenRegistry",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "owner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableInvalidOwner",
+      "type": "error"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "account",
+          "type": "address"
+        }
+      ],
+      "name": "OwnableUnauthorizedAccount",
+      "type": "error"
+    },
+    {
+      "inputs": [],
+      "name": "ReentrancyGuardReentrantCall",
+      "type": "error"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "entity",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "bool",
+          "name": "authorized",
+          "type": "bool"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "authorizedBy",
+          "type": "address"
+        }
+      ],
+      "name": "GovernmentEntityAuthorized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "projectId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "previousBudget",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "newBudget",
+          "type": "uint256"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "updatedBy",
+          "type": "address"
+        }
+      ],
+      "name": "ProjectBudgetUpdated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "projectId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum GovernmentProjectRegistry.ProjectCategory",
+          "name": "category",
+          "type": "uint8"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "governmentEntity",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "totalBudget",
+          "type": "uint256"
+        }
+      ],
+      "name": "ProjectCreated",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "projectId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "milestoneId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "targetDate",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "budgetAllocated",
+          "type": "uint256"
+        }
+      ],
+      "name": "ProjectMilestoneAdded",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "projectId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "milestoneId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "completionDate",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "uint256",
+          "name": "actualBudgetSpent",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "evidenceHash",
+          "type": "string"
+        }
+      ],
+      "name": "ProjectMilestoneCompleted",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "projectId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum GovernmentProjectRegistry.ProjectStatus",
+          "name": "oldStatus",
+          "type": "uint8"
+        },
+        {
+          "indexed": false,
+          "internalType": "enum GovernmentProjectRegistry.ProjectStatus",
+          "name": "newStatus",
+          "type": "uint8"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "updatedBy",
+          "type": "address"
+        }
+      ],
+      "name": "ProjectStatusUpdated",
+      "type": "event"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_title",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_description",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_targetDate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_budgetAllocated",
+          "type": "uint256"
+        }
+      ],
+      "name": "addProjectMilestone",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_entity",
+          "type": "address"
+        },
+        {
+          "internalType": "bool",
+          "name": "_authorized",
+          "type": "bool"
+        }
+      ],
+      "name": "authorizeGovernmentEntity",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "name": "authorizedGovernmentEntities",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "categoryProjects",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "citizenRegistry",
+      "outputs": [
+        {
+          "internalType": "contract CitizenIdentityRegistry",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_milestoneId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_actualBudgetSpent",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_evidenceHash",
+          "type": "string"
+        }
+      ],
+      "name": "completeProjectMilestone",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "string",
+          "name": "_title",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "_description",
+          "type": "string"
+        },
+        {
+          "internalType": "enum GovernmentProjectRegistry.ProjectCategory",
+          "name": "_category",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_totalBudget",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_estimatedEndDate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "_documentationHash",
+          "type": "string"
+        },
+        {
+          "internalType": "bool",
+          "name": "_isPublic",
+          "type": "bool"
+        }
+      ],
+      "name": "createProject",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum GovernmentProjectRegistry.ProjectStatus",
+          "name": "_status",
+          "type": "uint8"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_newBudget",
+          "type": "uint256"
+        }
+      ],
+      "name": "emergencyUpdateProject",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getProject",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "projectId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "title",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "enum GovernmentProjectRegistry.ProjectCategory",
+              "name": "category",
+              "type": "uint8"
+            },
+            {
+              "internalType": "enum GovernmentProjectRegistry.ProjectStatus",
+              "name": "status",
+              "type": "uint8"
+            },
+            {
+              "internalType": "address",
+              "name": "governmentEntity",
+              "type": "address"
+            },
+            {
+              "internalType": "uint256",
+              "name": "totalBudget",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "budgetSpent",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "startDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "estimatedEndDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "actualEndDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "documentationHash",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "citizenSupportScore",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isPublic",
+              "type": "bool"
+            },
+            {
+              "internalType": "uint256",
+              "name": "creationTimestamp",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "lastUpdateTimestamp",
+              "type": "uint256"
+            }
+          ],
+          "internalType": "struct GovernmentProjectRegistry.Project",
+          "name": "",
+          "type": "tuple"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getProjectMilestones",
+      "outputs": [
+        {
+          "components": [
+            {
+              "internalType": "uint256",
+              "name": "milestoneId",
+              "type": "uint256"
+            },
+            {
+              "internalType": "string",
+              "name": "title",
+              "type": "string"
+            },
+            {
+              "internalType": "string",
+              "name": "description",
+              "type": "string"
+            },
+            {
+              "internalType": "uint256",
+              "name": "targetDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "completionDate",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "budgetAllocated",
+              "type": "uint256"
+            },
+            {
+              "internalType": "uint256",
+              "name": "budgetSpent",
+              "type": "uint256"
+            },
+            {
+              "internalType": "bool",
+              "name": "isCompleted",
+              "type": "bool"
+            },
+            {
+              "internalType": "string",
+              "name": "evidenceHash",
+              "type": "string"
+            }
+          ],
+          "internalType": "struct GovernmentProjectRegistry.ProjectMilestone[]",
+          "name": "",
+          "type": "tuple[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectId",
+          "type": "uint256"
+        }
+      ],
+      "name": "getProjectProgress",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "totalMilestones",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "completedMilestones",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "budgetUtilization",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getProjectStats",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "totalProjects",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "approvedProjects",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "inProgressProjects",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "completedProjects",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalBudgetAllocated",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalBudgetSpent",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum GovernmentProjectRegistry.ProjectCategory",
+          "name": "_category",
+          "type": "uint8"
+        }
+      ],
+      "name": "getProjectsByCategory",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "_entity",
+          "type": "address"
+        }
+      ],
+      "name": "getProjectsByGovernmentEntity",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "enum GovernmentProjectRegistry.ProjectStatus",
+          "name": "_status",
+          "type": "uint8"
+        }
+      ],
+      "name": "getProjectsByStatus",
+      "outputs": [
+        {
+          "internalType": "uint256[]",
+          "name": "",
+          "type": "uint256[]"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getTotalProjects",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "governmentEntityProjects",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "milestoneCompleted",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "projectMilestones",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "milestoneId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "targetDate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "completionDate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "budgetAllocated",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "budgetSpent",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isCompleted",
+          "type": "bool"
+        },
+        {
+          "internalType": "string",
+          "name": "evidenceHash",
+          "type": "string"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "name": "projects",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "projectId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "internalType": "string",
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "internalType": "enum GovernmentProjectRegistry.ProjectCategory",
+          "name": "category",
+          "type": "uint8"
+        },
+        {
+          "internalType": "enum GovernmentProjectRegistry.ProjectStatus",
+          "name": "status",
+          "type": "uint8"
+        },
+        {
+          "internalType": "address",
+          "name": "governmentEntity",
+          "type": "address"
+        },
+        {
+          "internalType": "uint256",
+          "name": "totalBudget",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "budgetSpent",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "startDate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "estimatedEndDate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "actualEndDate",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "documentationHash",
+          "type": "string"
+        },
+        {
+          "internalType": "uint256",
+          "name": "citizenSupportScore",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "isPublic",
+          "type": "bool"
+        },
+        {
+          "internalType": "uint256",
+          "name": "creationTimestamp",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "lastUpdateTimestamp",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "bool",
+          "name": "_isPublic",
+          "type": "bool"
+        }
+      ],
+      "name": "setProjectPublic",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_supportScore",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateCitizenSupportScore",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "uint256",
+          "name": "_newBudget",
+          "type": "uint256"
+        }
+      ],
+      "name": "updateProjectBudget",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "_projectId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "enum GovernmentProjectRegistry.ProjectStatus",
+          "name": "_newStatus",
+          "type": "uint8"
+        }
+      ],
+      "name": "updateProjectStatus",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "transactionHash": "0x06bbc106f0d6e52a7a1d7b49150cebfda5e61ff0abeec661b62a951fd1f72d2f",
+  "receipt": {
+    "to": null,
+    "from": "0x847118E06a68716b385a86a50250C598D33Ca68C",
+    "contractAddress": "0xA2B1623a4AdE119f510Bd33493D70A246737bcD8",
+    "transactionIndex": 159,
+    "gasUsed": "2895230",
+    "logsBloom": "0x00000000000200000000000000000000040000000000000800800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000201000000000000000000000000000000000000020000000000000000000800000000000000000000000000000000400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000020000000000000000000000000200000000000000000000000000000000000000000",
+    "blockHash": "0x078eb49a006c558d4711745230414085af8c914048ebe31e9b1047822d8dabc8",
+    "transactionHash": "0x06bbc106f0d6e52a7a1d7b49150cebfda5e61ff0abeec661b62a951fd1f72d2f",
+    "logs": [
+      {
+        "transactionIndex": 159,
+        "blockNumber": 9142956,
+        "transactionHash": "0x06bbc106f0d6e52a7a1d7b49150cebfda5e61ff0abeec661b62a951fd1f72d2f",
+        "address": "0xA2B1623a4AdE119f510Bd33493D70A246737bcD8",
+        "topics": [
+          "0x8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0",
+          "0x0000000000000000000000000000000000000000000000000000000000000000",
+          "0x000000000000000000000000847118e06a68716b385a86a50250c598d33ca68c"
+        ],
+        "data": "0x",
+        "logIndex": 166,
+        "blockHash": "0x078eb49a006c558d4711745230414085af8c914048ebe31e9b1047822d8dabc8"
+      }
+    ],
+    "blockNumber": 9142956,
+    "cumulativeGasUsed": "21613111",
+    "status": 1,
+    "byzantium": true
+  },
+  "args": [
+    "0x847118E06a68716b385a86a50250C598D33Ca68C",
+    "0x9F4Bc4cb48e60871768b4cFB9CF9C53381063652"
+  ],
+  "numDeployments": 1,
+  "solcInputHash": "604c9b416adca51f3a9c4c2681d47f73",
+  "metadata": "{\"compiler\":{\"version\":\"0.8.20+commit.a1b79de6\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"address\",\"name\":\"initialOwner\",\"type\":\"address\"},{\"internalType\":\"address\",\"name\":\"_citizenRegistry\",\"type\":\"address\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"owner\",\"type\":\"address\"}],\"name\":\"OwnableInvalidOwner\",\"type\":\"error\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"account\",\"type\":\"address\"}],\"name\":\"OwnableUnauthorizedAccount\",\"type\":\"error\"},{\"inputs\":[],\"name\":\"ReentrancyGuardReentrantCall\",\"type\":\"error\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"entity\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"bool\",\"name\":\"authorized\",\"type\":\"bool\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"authorizedBy\",\"type\":\"address\"}],\"name\":\"GovernmentEntityAuthorized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"projectId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"previousBudget\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"newBudget\",\"type\":\"uint256\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"updatedBy\",\"type\":\"address\"}],\"name\":\"ProjectBudgetUpdated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"projectId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"title\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"enum GovernmentProjectRegistry.ProjectCategory\",\"name\":\"category\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"governmentEntity\",\"type\":\"address\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"totalBudget\",\"type\":\"uint256\"}],\"name\":\"ProjectCreated\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"projectId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"milestoneId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"title\",\"type\":\"string\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"targetDate\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"budgetAllocated\",\"type\":\"uint256\"}],\"name\":\"ProjectMilestoneAdded\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"projectId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"milestoneId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"completionDate\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"uint256\",\"name\":\"actualBudgetSpent\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"string\",\"name\":\"evidenceHash\",\"type\":\"string\"}],\"name\":\"ProjectMilestoneCompleted\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"uint256\",\"name\":\"projectId\",\"type\":\"uint256\"},{\"indexed\":false,\"internalType\":\"enum GovernmentProjectRegistry.ProjectStatus\",\"name\":\"oldStatus\",\"type\":\"uint8\"},{\"indexed\":false,\"internalType\":\"enum GovernmentProjectRegistry.ProjectStatus\",\"name\":\"newStatus\",\"type\":\"uint8\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"updatedBy\",\"type\":\"address\"}],\"name\":\"ProjectStatusUpdated\",\"type\":\"event\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"_title\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"_targetDate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_budgetAllocated\",\"type\":\"uint256\"}],\"name\":\"addProjectMilestone\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_entity\",\"type\":\"address\"},{\"internalType\":\"bool\",\"name\":\"_authorized\",\"type\":\"bool\"}],\"name\":\"authorizeGovernmentEntity\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"name\":\"authorizedGovernmentEntities\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"categoryProjects\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"citizenRegistry\",\"outputs\":[{\"internalType\":\"contract CitizenIdentityRegistry\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_milestoneId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_actualBudgetSpent\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"_evidenceHash\",\"type\":\"string\"}],\"name\":\"completeProjectMilestone\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"string\",\"name\":\"_title\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"_description\",\"type\":\"string\"},{\"internalType\":\"enum GovernmentProjectRegistry.ProjectCategory\",\"name\":\"_category\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"_totalBudget\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_estimatedEndDate\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"_documentationHash\",\"type\":\"string\"},{\"internalType\":\"bool\",\"name\":\"_isPublic\",\"type\":\"bool\"}],\"name\":\"createProject\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"},{\"internalType\":\"enum GovernmentProjectRegistry.ProjectStatus\",\"name\":\"_status\",\"type\":\"uint8\"},{\"internalType\":\"uint256\",\"name\":\"_newBudget\",\"type\":\"uint256\"}],\"name\":\"emergencyUpdateProject\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"}],\"name\":\"getProject\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"projectId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"title\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"enum GovernmentProjectRegistry.ProjectCategory\",\"name\":\"category\",\"type\":\"uint8\"},{\"internalType\":\"enum GovernmentProjectRegistry.ProjectStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"governmentEntity\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"totalBudget\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"budgetSpent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"startDate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"estimatedEndDate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"actualEndDate\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"documentationHash\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"citizenSupportScore\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isPublic\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"creationTimestamp\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lastUpdateTimestamp\",\"type\":\"uint256\"}],\"internalType\":\"struct GovernmentProjectRegistry.Project\",\"name\":\"\",\"type\":\"tuple\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"}],\"name\":\"getProjectMilestones\",\"outputs\":[{\"components\":[{\"internalType\":\"uint256\",\"name\":\"milestoneId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"title\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"targetDate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"completionDate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"budgetAllocated\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"budgetSpent\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isCompleted\",\"type\":\"bool\"},{\"internalType\":\"string\",\"name\":\"evidenceHash\",\"type\":\"string\"}],\"internalType\":\"struct GovernmentProjectRegistry.ProjectMilestone[]\",\"name\":\"\",\"type\":\"tuple[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"}],\"name\":\"getProjectProgress\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"totalMilestones\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"completedMilestones\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"budgetUtilization\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getProjectStats\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"totalProjects\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"approvedProjects\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"inProgressProjects\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"completedProjects\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalBudgetAllocated\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"totalBudgetSpent\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"enum GovernmentProjectRegistry.ProjectCategory\",\"name\":\"_category\",\"type\":\"uint8\"}],\"name\":\"getProjectsByCategory\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"_entity\",\"type\":\"address\"}],\"name\":\"getProjectsByGovernmentEntity\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"enum GovernmentProjectRegistry.ProjectStatus\",\"name\":\"_status\",\"type\":\"uint8\"}],\"name\":\"getProjectsByStatus\",\"outputs\":[{\"internalType\":\"uint256[]\",\"name\":\"\",\"type\":\"uint256[]\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"getTotalProjects\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"governmentEntityProjects\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"milestoneCompleted\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"projectMilestones\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"milestoneId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"title\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"targetDate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"completionDate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"budgetAllocated\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"budgetSpent\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isCompleted\",\"type\":\"bool\"},{\"internalType\":\"string\",\"name\":\"evidenceHash\",\"type\":\"string\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"\",\"type\":\"uint256\"}],\"name\":\"projects\",\"outputs\":[{\"internalType\":\"uint256\",\"name\":\"projectId\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"title\",\"type\":\"string\"},{\"internalType\":\"string\",\"name\":\"description\",\"type\":\"string\"},{\"internalType\":\"enum GovernmentProjectRegistry.ProjectCategory\",\"name\":\"category\",\"type\":\"uint8\"},{\"internalType\":\"enum GovernmentProjectRegistry.ProjectStatus\",\"name\":\"status\",\"type\":\"uint8\"},{\"internalType\":\"address\",\"name\":\"governmentEntity\",\"type\":\"address\"},{\"internalType\":\"uint256\",\"name\":\"totalBudget\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"budgetSpent\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"startDate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"estimatedEndDate\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"actualEndDate\",\"type\":\"uint256\"},{\"internalType\":\"string\",\"name\":\"documentationHash\",\"type\":\"string\"},{\"internalType\":\"uint256\",\"name\":\"citizenSupportScore\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"isPublic\",\"type\":\"bool\"},{\"internalType\":\"uint256\",\"name\":\"creationTimestamp\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"lastUpdateTimestamp\",\"type\":\"uint256\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"},{\"internalType\":\"bool\",\"name\":\"_isPublic\",\"type\":\"bool\"}],\"name\":\"setProjectPublic\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_supportScore\",\"type\":\"uint256\"}],\"name\":\"updateCitizenSupportScore\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"},{\"internalType\":\"uint256\",\"name\":\"_newBudget\",\"type\":\"uint256\"}],\"name\":\"updateProjectBudget\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"uint256\",\"name\":\"_projectId\",\"type\":\"uint256\"},{\"internalType\":\"enum GovernmentProjectRegistry.ProjectStatus\",\"name\":\"_newStatus\",\"type\":\"uint8\"}],\"name\":\"updateProjectStatus\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"author\":\"CitiProof Team\",\"details\":\"Manages all government projects and their lifecycle\",\"errors\":{\"OwnableInvalidOwner(address)\":[{\"details\":\"The owner is not a valid owner account. (eg. `address(0)`)\"}],\"OwnableUnauthorizedAccount(address)\":[{\"details\":\"The caller account is not authorized to perform an operation.\"}],\"ReentrancyGuardReentrantCall()\":[{\"details\":\"Unauthorized reentrant call.\"}]},\"kind\":\"dev\",\"methods\":{\"addProjectMilestone(uint256,string,string,uint256,uint256)\":{\"details\":\"Add milestone to project\"},\"completeProjectMilestone(uint256,uint256,uint256,string)\":{\"details\":\"Complete project milestone\"},\"createProject(string,string,uint8,uint256,uint256,string,bool)\":{\"details\":\"Create a new government project\"},\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"},\"updateCitizenSupportScore(uint256,uint256)\":{\"details\":\"Update citizen support score (called by voting contract)\"},\"updateProjectBudget(uint256,uint256)\":{\"details\":\"Update project budget (owner or admin only)\"},\"updateProjectStatus(uint256,uint8)\":{\"details\":\"Update project status\"}},\"title\":\"GovernmentProjectRegistry\",\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/GovernmentProjectRegistry.sol\":\"GovernmentProjectRegistry\"},\"evmVersion\":\"paris\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\",\"useLiteralContent\":true},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[],\"viaIR\":true},\"sources\":{\"@openzeppelin/contracts/access/Ownable.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (access/Ownable.sol)\\n\\npragma solidity ^0.8.20;\\n\\nimport {Context} from \\\"../utils/Context.sol\\\";\\n\\n/**\\n * @dev Contract module which provides a basic access control mechanism, where\\n * there is an account (an owner) that can be granted exclusive access to\\n * specific functions.\\n *\\n * The initial owner is set to the address provided by the deployer. This can\\n * later be changed with {transferOwnership}.\\n *\\n * This module is used through inheritance. It will make available the modifier\\n * `onlyOwner`, which can be applied to your functions to restrict their use to\\n * the owner.\\n */\\nabstract contract Ownable is Context {\\n    address private _owner;\\n\\n    /**\\n     * @dev The caller account is not authorized to perform an operation.\\n     */\\n    error OwnableUnauthorizedAccount(address account);\\n\\n    /**\\n     * @dev The owner is not a valid owner account. (eg. `address(0)`)\\n     */\\n    error OwnableInvalidOwner(address owner);\\n\\n    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);\\n\\n    /**\\n     * @dev Initializes the contract setting the address provided by the deployer as the initial owner.\\n     */\\n    constructor(address initialOwner) {\\n        if (initialOwner == address(0)) {\\n            revert OwnableInvalidOwner(address(0));\\n        }\\n        _transferOwnership(initialOwner);\\n    }\\n\\n    /**\\n     * @dev Throws if called by any account other than the owner.\\n     */\\n    modifier onlyOwner() {\\n        _checkOwner();\\n        _;\\n    }\\n\\n    /**\\n     * @dev Returns the address of the current owner.\\n     */\\n    function owner() public view virtual returns (address) {\\n        return _owner;\\n    }\\n\\n    /**\\n     * @dev Throws if the sender is not the owner.\\n     */\\n    function _checkOwner() internal view virtual {\\n        if (owner() != _msgSender()) {\\n            revert OwnableUnauthorizedAccount(_msgSender());\\n        }\\n    }\\n\\n    /**\\n     * @dev Leaves the contract without owner. It will not be possible to call\\n     * `onlyOwner` functions. Can only be called by the current owner.\\n     *\\n     * NOTE: Renouncing ownership will leave the contract without an owner,\\n     * thereby disabling any functionality that is only available to the owner.\\n     */\\n    function renounceOwnership() public virtual onlyOwner {\\n        _transferOwnership(address(0));\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Can only be called by the current owner.\\n     */\\n    function transferOwnership(address newOwner) public virtual onlyOwner {\\n        if (newOwner == address(0)) {\\n            revert OwnableInvalidOwner(address(0));\\n        }\\n        _transferOwnership(newOwner);\\n    }\\n\\n    /**\\n     * @dev Transfers ownership of the contract to a new account (`newOwner`).\\n     * Internal function without access restriction.\\n     */\\n    function _transferOwnership(address newOwner) internal virtual {\\n        address oldOwner = _owner;\\n        _owner = newOwner;\\n        emit OwnershipTransferred(oldOwner, newOwner);\\n    }\\n}\\n\",\"keccak256\":\"0xff6d0bb2e285473e5311d9d3caacb525ae3538a80758c10649a4d61029b017bb\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Context.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.1) (utils/Context.sol)\\n\\npragma solidity ^0.8.20;\\n\\n/**\\n * @dev Provides information about the current execution context, including the\\n * sender of the transaction and its data. While these are generally available\\n * via msg.sender and msg.data, they should not be accessed in such a direct\\n * manner, since when dealing with meta-transactions the account sending and\\n * paying for execution may not be the actual sender (as far as an application\\n * is concerned).\\n *\\n * This contract is only required for intermediate, library-like contracts.\\n */\\nabstract contract Context {\\n    function _msgSender() internal view virtual returns (address) {\\n        return msg.sender;\\n    }\\n\\n    function _msgData() internal view virtual returns (bytes calldata) {\\n        return msg.data;\\n    }\\n\\n    function _contextSuffixLength() internal view virtual returns (uint256) {\\n        return 0;\\n    }\\n}\\n\",\"keccak256\":\"0x493033a8d1b176a037b2cc6a04dad01a5c157722049bbecf632ca876224dd4b2\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/ReentrancyGuard.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (utils/ReentrancyGuard.sol)\\n\\npragma solidity ^0.8.20;\\n\\n/**\\n * @dev Contract module that helps prevent reentrant calls to a function.\\n *\\n * Inheriting from `ReentrancyGuard` will make the {nonReentrant} modifier\\n * available, which can be applied to functions to make sure there are no nested\\n * (reentrant) calls to them.\\n *\\n * Note that because there is a single `nonReentrant` guard, functions marked as\\n * `nonReentrant` may not call one another. This can be worked around by making\\n * those functions `private`, and then adding `external` `nonReentrant` entry\\n * points to them.\\n *\\n * TIP: If you would like to learn more about reentrancy and alternative ways\\n * to protect against it, check out our blog post\\n * https://blog.openzeppelin.com/reentrancy-after-istanbul/[Reentrancy After Istanbul].\\n */\\nabstract contract ReentrancyGuard {\\n    // Booleans are more expensive than uint256 or any type that takes up a full\\n    // word because each write operation emits an extra SLOAD to first read the\\n    // slot's contents, replace the bits taken up by the boolean, and then write\\n    // back. This is the compiler's defense against contract upgrades and\\n    // pointer aliasing, and it cannot be disabled.\\n\\n    // The values being non-zero value makes deployment a bit more expensive,\\n    // but in exchange the refund on every call to nonReentrant will be lower in\\n    // amount. Since refunds are capped to a percentage of the total\\n    // transaction's gas, it is best to keep them low in cases like this one, to\\n    // increase the likelihood of the full refund coming into effect.\\n    uint256 private constant NOT_ENTERED = 1;\\n    uint256 private constant ENTERED = 2;\\n\\n    uint256 private _status;\\n\\n    /**\\n     * @dev Unauthorized reentrant call.\\n     */\\n    error ReentrancyGuardReentrantCall();\\n\\n    constructor() {\\n        _status = NOT_ENTERED;\\n    }\\n\\n    /**\\n     * @dev Prevents a contract from calling itself, directly or indirectly.\\n     * Calling a `nonReentrant` function from another `nonReentrant`\\n     * function is not supported. It is possible to prevent this from happening\\n     * by making the `nonReentrant` function external, and making it call a\\n     * `private` function that does the actual work.\\n     */\\n    modifier nonReentrant() {\\n        _nonReentrantBefore();\\n        _;\\n        _nonReentrantAfter();\\n    }\\n\\n    function _nonReentrantBefore() private {\\n        // On the first call to nonReentrant, _status will be NOT_ENTERED\\n        if (_status == ENTERED) {\\n            revert ReentrancyGuardReentrantCall();\\n        }\\n\\n        // Any calls to nonReentrant after this point will fail\\n        _status = ENTERED;\\n    }\\n\\n    function _nonReentrantAfter() private {\\n        // By storing the original value once again, a refund is triggered (see\\n        // https://eips.ethereum.org/EIPS/eip-2200)\\n        _status = NOT_ENTERED;\\n    }\\n\\n    /**\\n     * @dev Returns true if the reentrancy guard is currently set to \\\"entered\\\", which indicates there is a\\n     * `nonReentrant` function in the call stack.\\n     */\\n    function _reentrancyGuardEntered() internal view returns (bool) {\\n        return _status == ENTERED;\\n    }\\n}\\n\",\"keccak256\":\"0xf980daa263b661ab8ddee7d4fd833c7da7e7995e2c359ff1f17e67e4112f2236\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/Strings.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (utils/Strings.sol)\\n\\npragma solidity ^0.8.20;\\n\\nimport {Math} from \\\"./math/Math.sol\\\";\\nimport {SignedMath} from \\\"./math/SignedMath.sol\\\";\\n\\n/**\\n * @dev String operations.\\n */\\nlibrary Strings {\\n    bytes16 private constant HEX_DIGITS = \\\"0123456789abcdef\\\";\\n    uint8 private constant ADDRESS_LENGTH = 20;\\n\\n    /**\\n     * @dev The `value` string doesn't fit in the specified `length`.\\n     */\\n    error StringsInsufficientHexLength(uint256 value, uint256 length);\\n\\n    /**\\n     * @dev Converts a `uint256` to its ASCII `string` decimal representation.\\n     */\\n    function toString(uint256 value) internal pure returns (string memory) {\\n        unchecked {\\n            uint256 length = Math.log10(value) + 1;\\n            string memory buffer = new string(length);\\n            uint256 ptr;\\n            /// @solidity memory-safe-assembly\\n            assembly {\\n                ptr := add(buffer, add(32, length))\\n            }\\n            while (true) {\\n                ptr--;\\n                /// @solidity memory-safe-assembly\\n                assembly {\\n                    mstore8(ptr, byte(mod(value, 10), HEX_DIGITS))\\n                }\\n                value /= 10;\\n                if (value == 0) break;\\n            }\\n            return buffer;\\n        }\\n    }\\n\\n    /**\\n     * @dev Converts a `int256` to its ASCII `string` decimal representation.\\n     */\\n    function toStringSigned(int256 value) internal pure returns (string memory) {\\n        return string.concat(value < 0 ? \\\"-\\\" : \\\"\\\", toString(SignedMath.abs(value)));\\n    }\\n\\n    /**\\n     * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation.\\n     */\\n    function toHexString(uint256 value) internal pure returns (string memory) {\\n        unchecked {\\n            return toHexString(value, Math.log256(value) + 1);\\n        }\\n    }\\n\\n    /**\\n     * @dev Converts a `uint256` to its ASCII `string` hexadecimal representation with fixed length.\\n     */\\n    function toHexString(uint256 value, uint256 length) internal pure returns (string memory) {\\n        uint256 localValue = value;\\n        bytes memory buffer = new bytes(2 * length + 2);\\n        buffer[0] = \\\"0\\\";\\n        buffer[1] = \\\"x\\\";\\n        for (uint256 i = 2 * length + 1; i > 1; --i) {\\n            buffer[i] = HEX_DIGITS[localValue & 0xf];\\n            localValue >>= 4;\\n        }\\n        if (localValue != 0) {\\n            revert StringsInsufficientHexLength(value, length);\\n        }\\n        return string(buffer);\\n    }\\n\\n    /**\\n     * @dev Converts an `address` with fixed length of 20 bytes to its not checksummed ASCII `string` hexadecimal\\n     * representation.\\n     */\\n    function toHexString(address addr) internal pure returns (string memory) {\\n        return toHexString(uint256(uint160(addr)), ADDRESS_LENGTH);\\n    }\\n\\n    /**\\n     * @dev Returns true if the two strings are equal.\\n     */\\n    function equal(string memory a, string memory b) internal pure returns (bool) {\\n        return bytes(a).length == bytes(b).length && keccak256(bytes(a)) == keccak256(bytes(b));\\n    }\\n}\\n\",\"keccak256\":\"0x55f102ea785d8399c0e58d1108e2d289506dde18abc6db1b7f68c1f9f9bc5792\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/math/Math.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (utils/math/Math.sol)\\n\\npragma solidity ^0.8.20;\\n\\n/**\\n * @dev Standard math utilities missing in the Solidity language.\\n */\\nlibrary Math {\\n    /**\\n     * @dev Muldiv operation overflow.\\n     */\\n    error MathOverflowedMulDiv();\\n\\n    enum Rounding {\\n        Floor, // Toward negative infinity\\n        Ceil, // Toward positive infinity\\n        Trunc, // Toward zero\\n        Expand // Away from zero\\n    }\\n\\n    /**\\n     * @dev Returns the addition of two unsigned integers, with an overflow flag.\\n     */\\n    function tryAdd(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            uint256 c = a + b;\\n            if (c < a) return (false, 0);\\n            return (true, c);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the subtraction of two unsigned integers, with an overflow flag.\\n     */\\n    function trySub(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            if (b > a) return (false, 0);\\n            return (true, a - b);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the multiplication of two unsigned integers, with an overflow flag.\\n     */\\n    function tryMul(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            // Gas optimization: this is cheaper than requiring 'a' not being zero, but the\\n            // benefit is lost if 'b' is also tested.\\n            // See: https://github.com/OpenZeppelin/openzeppelin-contracts/pull/522\\n            if (a == 0) return (true, 0);\\n            uint256 c = a * b;\\n            if (c / a != b) return (false, 0);\\n            return (true, c);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the division of two unsigned integers, with a division by zero flag.\\n     */\\n    function tryDiv(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            if (b == 0) return (false, 0);\\n            return (true, a / b);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the remainder of dividing two unsigned integers, with a division by zero flag.\\n     */\\n    function tryMod(uint256 a, uint256 b) internal pure returns (bool, uint256) {\\n        unchecked {\\n            if (b == 0) return (false, 0);\\n            return (true, a % b);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns the largest of two numbers.\\n     */\\n    function max(uint256 a, uint256 b) internal pure returns (uint256) {\\n        return a > b ? a : b;\\n    }\\n\\n    /**\\n     * @dev Returns the smallest of two numbers.\\n     */\\n    function min(uint256 a, uint256 b) internal pure returns (uint256) {\\n        return a < b ? a : b;\\n    }\\n\\n    /**\\n     * @dev Returns the average of two numbers. The result is rounded towards\\n     * zero.\\n     */\\n    function average(uint256 a, uint256 b) internal pure returns (uint256) {\\n        // (a + b) / 2 can overflow.\\n        return (a & b) + (a ^ b) / 2;\\n    }\\n\\n    /**\\n     * @dev Returns the ceiling of the division of two numbers.\\n     *\\n     * This differs from standard division with `/` in that it rounds towards infinity instead\\n     * of rounding towards zero.\\n     */\\n    function ceilDiv(uint256 a, uint256 b) internal pure returns (uint256) {\\n        if (b == 0) {\\n            // Guarantee the same behavior as in a regular Solidity division.\\n            return a / b;\\n        }\\n\\n        // (a + b - 1) / b can overflow on addition, so we distribute.\\n        return a == 0 ? 0 : (a - 1) / b + 1;\\n    }\\n\\n    /**\\n     * @notice Calculates floor(x * y / denominator) with full precision. Throws if result overflows a uint256 or\\n     * denominator == 0.\\n     * @dev Original credit to Remco Bloemen under MIT license (https://xn--2-umb.com/21/muldiv) with further edits by\\n     * Uniswap Labs also under MIT license.\\n     */\\n    function mulDiv(uint256 x, uint256 y, uint256 denominator) internal pure returns (uint256 result) {\\n        unchecked {\\n            // 512-bit multiply [prod1 prod0] = x * y. Compute the product mod 2^256 and mod 2^256 - 1, then use\\n            // use the Chinese Remainder Theorem to reconstruct the 512 bit result. The result is stored in two 256\\n            // variables such that product = prod1 * 2^256 + prod0.\\n            uint256 prod0 = x * y; // Least significant 256 bits of the product\\n            uint256 prod1; // Most significant 256 bits of the product\\n            assembly {\\n                let mm := mulmod(x, y, not(0))\\n                prod1 := sub(sub(mm, prod0), lt(mm, prod0))\\n            }\\n\\n            // Handle non-overflow cases, 256 by 256 division.\\n            if (prod1 == 0) {\\n                // Solidity will revert if denominator == 0, unlike the div opcode on its own.\\n                // The surrounding unchecked block does not change this fact.\\n                // See https://docs.soliditylang.org/en/latest/control-structures.html#checked-or-unchecked-arithmetic.\\n                return prod0 / denominator;\\n            }\\n\\n            // Make sure the result is less than 2^256. Also prevents denominator == 0.\\n            if (denominator <= prod1) {\\n                revert MathOverflowedMulDiv();\\n            }\\n\\n            ///////////////////////////////////////////////\\n            // 512 by 256 division.\\n            ///////////////////////////////////////////////\\n\\n            // Make division exact by subtracting the remainder from [prod1 prod0].\\n            uint256 remainder;\\n            assembly {\\n                // Compute remainder using mulmod.\\n                remainder := mulmod(x, y, denominator)\\n\\n                // Subtract 256 bit number from 512 bit number.\\n                prod1 := sub(prod1, gt(remainder, prod0))\\n                prod0 := sub(prod0, remainder)\\n            }\\n\\n            // Factor powers of two out of denominator and compute largest power of two divisor of denominator.\\n            // Always >= 1. See https://cs.stackexchange.com/q/138556/92363.\\n\\n            uint256 twos = denominator & (0 - denominator);\\n            assembly {\\n                // Divide denominator by twos.\\n                denominator := div(denominator, twos)\\n\\n                // Divide [prod1 prod0] by twos.\\n                prod0 := div(prod0, twos)\\n\\n                // Flip twos such that it is 2^256 / twos. If twos is zero, then it becomes one.\\n                twos := add(div(sub(0, twos), twos), 1)\\n            }\\n\\n            // Shift in bits from prod1 into prod0.\\n            prod0 |= prod1 * twos;\\n\\n            // Invert denominator mod 2^256. Now that denominator is an odd number, it has an inverse modulo 2^256 such\\n            // that denominator * inv = 1 mod 2^256. Compute the inverse by starting with a seed that is correct for\\n            // four bits. That is, denominator * inv = 1 mod 2^4.\\n            uint256 inverse = (3 * denominator) ^ 2;\\n\\n            // Use the Newton-Raphson iteration to improve the precision. Thanks to Hensel's lifting lemma, this also\\n            // works in modular arithmetic, doubling the correct bits in each step.\\n            inverse *= 2 - denominator * inverse; // inverse mod 2^8\\n            inverse *= 2 - denominator * inverse; // inverse mod 2^16\\n            inverse *= 2 - denominator * inverse; // inverse mod 2^32\\n            inverse *= 2 - denominator * inverse; // inverse mod 2^64\\n            inverse *= 2 - denominator * inverse; // inverse mod 2^128\\n            inverse *= 2 - denominator * inverse; // inverse mod 2^256\\n\\n            // Because the division is now exact we can divide by multiplying with the modular inverse of denominator.\\n            // This will give us the correct result modulo 2^256. Since the preconditions guarantee that the outcome is\\n            // less than 2^256, this is the final result. We don't need to compute the high bits of the result and prod1\\n            // is no longer required.\\n            result = prod0 * inverse;\\n            return result;\\n        }\\n    }\\n\\n    /**\\n     * @notice Calculates x * y / denominator with full precision, following the selected rounding direction.\\n     */\\n    function mulDiv(uint256 x, uint256 y, uint256 denominator, Rounding rounding) internal pure returns (uint256) {\\n        uint256 result = mulDiv(x, y, denominator);\\n        if (unsignedRoundsUp(rounding) && mulmod(x, y, denominator) > 0) {\\n            result += 1;\\n        }\\n        return result;\\n    }\\n\\n    /**\\n     * @dev Returns the square root of a number. If the number is not a perfect square, the value is rounded\\n     * towards zero.\\n     *\\n     * Inspired by Henry S. Warren, Jr.'s \\\"Hacker's Delight\\\" (Chapter 11).\\n     */\\n    function sqrt(uint256 a) internal pure returns (uint256) {\\n        if (a == 0) {\\n            return 0;\\n        }\\n\\n        // For our first guess, we get the biggest power of 2 which is smaller than the square root of the target.\\n        //\\n        // We know that the \\\"msb\\\" (most significant bit) of our target number `a` is a power of 2 such that we have\\n        // `msb(a) <= a < 2*msb(a)`. This value can be written `msb(a)=2**k` with `k=log2(a)`.\\n        //\\n        // This can be rewritten `2**log2(a) <= a < 2**(log2(a) + 1)`\\n        // \\u2192 `sqrt(2**k) <= sqrt(a) < sqrt(2**(k+1))`\\n        // \\u2192 `2**(k/2) <= sqrt(a) < 2**((k+1)/2) <= 2**(k/2 + 1)`\\n        //\\n        // Consequently, `2**(log2(a) / 2)` is a good first approximation of `sqrt(a)` with at least 1 correct bit.\\n        uint256 result = 1 << (log2(a) >> 1);\\n\\n        // At this point `result` is an estimation with one bit of precision. We know the true value is a uint128,\\n        // since it is the square root of a uint256. Newton's method converges quadratically (precision doubles at\\n        // every iteration). We thus need at most 7 iteration to turn our partial result with one bit of precision\\n        // into the expected uint128 result.\\n        unchecked {\\n            result = (result + a / result) >> 1;\\n            result = (result + a / result) >> 1;\\n            result = (result + a / result) >> 1;\\n            result = (result + a / result) >> 1;\\n            result = (result + a / result) >> 1;\\n            result = (result + a / result) >> 1;\\n            result = (result + a / result) >> 1;\\n            return min(result, a / result);\\n        }\\n    }\\n\\n    /**\\n     * @notice Calculates sqrt(a), following the selected rounding direction.\\n     */\\n    function sqrt(uint256 a, Rounding rounding) internal pure returns (uint256) {\\n        unchecked {\\n            uint256 result = sqrt(a);\\n            return result + (unsignedRoundsUp(rounding) && result * result < a ? 1 : 0);\\n        }\\n    }\\n\\n    /**\\n     * @dev Return the log in base 2 of a positive value rounded towards zero.\\n     * Returns 0 if given 0.\\n     */\\n    function log2(uint256 value) internal pure returns (uint256) {\\n        uint256 result = 0;\\n        unchecked {\\n            if (value >> 128 > 0) {\\n                value >>= 128;\\n                result += 128;\\n            }\\n            if (value >> 64 > 0) {\\n                value >>= 64;\\n                result += 64;\\n            }\\n            if (value >> 32 > 0) {\\n                value >>= 32;\\n                result += 32;\\n            }\\n            if (value >> 16 > 0) {\\n                value >>= 16;\\n                result += 16;\\n            }\\n            if (value >> 8 > 0) {\\n                value >>= 8;\\n                result += 8;\\n            }\\n            if (value >> 4 > 0) {\\n                value >>= 4;\\n                result += 4;\\n            }\\n            if (value >> 2 > 0) {\\n                value >>= 2;\\n                result += 2;\\n            }\\n            if (value >> 1 > 0) {\\n                result += 1;\\n            }\\n        }\\n        return result;\\n    }\\n\\n    /**\\n     * @dev Return the log in base 2, following the selected rounding direction, of a positive value.\\n     * Returns 0 if given 0.\\n     */\\n    function log2(uint256 value, Rounding rounding) internal pure returns (uint256) {\\n        unchecked {\\n            uint256 result = log2(value);\\n            return result + (unsignedRoundsUp(rounding) && 1 << result < value ? 1 : 0);\\n        }\\n    }\\n\\n    /**\\n     * @dev Return the log in base 10 of a positive value rounded towards zero.\\n     * Returns 0 if given 0.\\n     */\\n    function log10(uint256 value) internal pure returns (uint256) {\\n        uint256 result = 0;\\n        unchecked {\\n            if (value >= 10 ** 64) {\\n                value /= 10 ** 64;\\n                result += 64;\\n            }\\n            if (value >= 10 ** 32) {\\n                value /= 10 ** 32;\\n                result += 32;\\n            }\\n            if (value >= 10 ** 16) {\\n                value /= 10 ** 16;\\n                result += 16;\\n            }\\n            if (value >= 10 ** 8) {\\n                value /= 10 ** 8;\\n                result += 8;\\n            }\\n            if (value >= 10 ** 4) {\\n                value /= 10 ** 4;\\n                result += 4;\\n            }\\n            if (value >= 10 ** 2) {\\n                value /= 10 ** 2;\\n                result += 2;\\n            }\\n            if (value >= 10 ** 1) {\\n                result += 1;\\n            }\\n        }\\n        return result;\\n    }\\n\\n    /**\\n     * @dev Return the log in base 10, following the selected rounding direction, of a positive value.\\n     * Returns 0 if given 0.\\n     */\\n    function log10(uint256 value, Rounding rounding) internal pure returns (uint256) {\\n        unchecked {\\n            uint256 result = log10(value);\\n            return result + (unsignedRoundsUp(rounding) && 10 ** result < value ? 1 : 0);\\n        }\\n    }\\n\\n    /**\\n     * @dev Return the log in base 256 of a positive value rounded towards zero.\\n     * Returns 0 if given 0.\\n     *\\n     * Adding one to the result gives the number of pairs of hex symbols needed to represent `value` as a hex string.\\n     */\\n    function log256(uint256 value) internal pure returns (uint256) {\\n        uint256 result = 0;\\n        unchecked {\\n            if (value >> 128 > 0) {\\n                value >>= 128;\\n                result += 16;\\n            }\\n            if (value >> 64 > 0) {\\n                value >>= 64;\\n                result += 8;\\n            }\\n            if (value >> 32 > 0) {\\n                value >>= 32;\\n                result += 4;\\n            }\\n            if (value >> 16 > 0) {\\n                value >>= 16;\\n                result += 2;\\n            }\\n            if (value >> 8 > 0) {\\n                result += 1;\\n            }\\n        }\\n        return result;\\n    }\\n\\n    /**\\n     * @dev Return the log in base 256, following the selected rounding direction, of a positive value.\\n     * Returns 0 if given 0.\\n     */\\n    function log256(uint256 value, Rounding rounding) internal pure returns (uint256) {\\n        unchecked {\\n            uint256 result = log256(value);\\n            return result + (unsignedRoundsUp(rounding) && 1 << (result << 3) < value ? 1 : 0);\\n        }\\n    }\\n\\n    /**\\n     * @dev Returns whether a provided rounding mode is considered rounding up for unsigned integers.\\n     */\\n    function unsignedRoundsUp(Rounding rounding) internal pure returns (bool) {\\n        return uint8(rounding) % 2 == 1;\\n    }\\n}\\n\",\"keccak256\":\"0x005ec64c6313f0555d59e278f9a7a5ab2db5bdc72a027f255a37c327af1ec02d\",\"license\":\"MIT\"},\"@openzeppelin/contracts/utils/math/SignedMath.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\n// OpenZeppelin Contracts (last updated v5.0.0) (utils/math/SignedMath.sol)\\n\\npragma solidity ^0.8.20;\\n\\n/**\\n * @dev Standard signed math utilities missing in the Solidity language.\\n */\\nlibrary SignedMath {\\n    /**\\n     * @dev Returns the largest of two signed numbers.\\n     */\\n    function max(int256 a, int256 b) internal pure returns (int256) {\\n        return a > b ? a : b;\\n    }\\n\\n    /**\\n     * @dev Returns the smallest of two signed numbers.\\n     */\\n    function min(int256 a, int256 b) internal pure returns (int256) {\\n        return a < b ? a : b;\\n    }\\n\\n    /**\\n     * @dev Returns the average of two signed numbers without overflow.\\n     * The result is rounded towards zero.\\n     */\\n    function average(int256 a, int256 b) internal pure returns (int256) {\\n        // Formula from the book \\\"Hacker's Delight\\\"\\n        int256 x = (a & b) + ((a ^ b) >> 1);\\n        return x + (int256(uint256(x) >> 255) & (a ^ b));\\n    }\\n\\n    /**\\n     * @dev Returns the absolute unsigned value of a signed value.\\n     */\\n    function abs(int256 n) internal pure returns (uint256) {\\n        unchecked {\\n            // must be unchecked in order to support `n = type(int256).min`\\n            return uint256(n >= 0 ? n : -n);\\n        }\\n    }\\n}\\n\",\"keccak256\":\"0x5f7e4076e175393767754387c962926577f1660dd9b810187b9002407656be72\",\"license\":\"MIT\"},\"contracts/CitizenIdentityRegistry.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.19;\\n\\nimport \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\nimport \\\"@openzeppelin/contracts/utils/ReentrancyGuard.sol\\\";\\nimport \\\"@openzeppelin/contracts/utils/Strings.sol\\\";\\n\\n/**\\n * @title CitizenIdentityRegistry\\n * @dev Manages verified citizen identities and their verification levels\\n * @author CitiProof Team\\n */\\ncontract CitizenIdentityRegistry is Ownable, ReentrancyGuard {\\n    // Counter for citizen IDs (using simple uint256 instead of Counters)\\n    uint256 private _citizenIdCounter;\\n\\n    // Verification levels\\n    enum VerificationLevel {\\n        UNVERIFIED,    // Default state\\n        BASIC,         // Basic wallet connection + EFP\\n        VERIFIED,      // Enhanced verification (50+ EFP followers)\\n        PREMIUM        // Government-verified or high reputation\\n    }\\n\\n    // Citizen profile structure\\n    struct CitizenProfile {\\n        uint256 citizenId;\\n        address walletAddress;\\n        string ensName;              // ENS name if available\\n        string efpTokenId;           // EFP list token ID\\n        uint256 efpFollowers;        // EFP follower count\\n        uint256 efpFollowing;        // EFP following count\\n        VerificationLevel verificationLevel;\\n        uint256 registrationTimestamp;\\n        uint256 lastUpdateTimestamp;\\n        bool isActive;\\n        uint256 reputationScore;     // Link to reputation contract\\n        string ipfsMetadata;         // Additional profile data on IPFS\\n    }\\n\\n    // Storage mappings\\n    mapping(address => uint256) public walletToCitizenId;\\n    mapping(uint256 => CitizenProfile) public citizens;\\n    mapping(string => uint256) public ensNameToCitizenId;\\n    mapping(string => bool) public registeredEnsNames;\\n\\n    // Events\\n    event CitizenRegistered(\\n        uint256 indexed citizenId,\\n        address indexed walletAddress,\\n        string ensName,\\n        VerificationLevel verificationLevel\\n    );\\n\\n    event CitizenVerificationUpdated(\\n        uint256 indexed citizenId,\\n        address indexed walletAddress,\\n        VerificationLevel oldLevel,\\n        VerificationLevel newLevel\\n    );\\n\\n    event CitizenProfileUpdated(\\n        uint256 indexed citizenId,\\n        address indexed walletAddress,\\n        string ensName,\\n        string efpTokenId\\n    );\\n\\n    event CitizenDeactivated(\\n        uint256 indexed citizenId,\\n        address indexed walletAddress,\\n        address indexed deactivatedBy\\n    );\\n\\n    // Modifiers\\n    modifier onlyRegisteredCitizen() {\\n        require(walletToCitizenId[msg.sender] != 0, \\\"CitizenRegistry: Caller is not a registered citizen\\\");\\n        require(citizens[walletToCitizenId[msg.sender]].isActive, \\\"CitizenRegistry: Citizen account is not active\\\");\\n        _;\\n    }\\n\\n    modifier validCitizenId(uint256 _citizenId) {\\n        require(_citizenId > 0 && _citizenId <= _citizenIdCounter, \\\"CitizenRegistry: Invalid citizen ID\\\");\\n        _;\\n    }\\n\\n    modifier onlyActiveCitizen(uint256 _citizenId) {\\n        require(citizens[_citizenId].isActive, \\\"CitizenRegistry: Citizen is not active\\\");\\n        _;\\n    }\\n\\n    constructor(address initialOwner) Ownable(initialOwner) {}\\n\\n    /**\\n     * @dev Register a new citizen with flexible requirements\\n     * @param _ensName ENS name (can be empty string for wallet-only registration)\\n     * @param _efpTokenId EFP list token ID (can be empty string)\\n     * @param _efpFollowers Number of EFP followers (0 allowed for new users)\\n     * @param _efpFollowing Number of EFP following (0 allowed for new users)\\n     * @param _ipfsMetadata IPFS hash for additional profile data\\n     */\\n    function registerCitizen(\\n        string memory _ensName,\\n        string memory _efpTokenId,\\n        uint256 _efpFollowers,\\n        uint256 _efpFollowing,\\n        string memory _ipfsMetadata\\n    ) external nonReentrant {\\n        require(walletToCitizenId[msg.sender] == 0, \\\"CitizenRegistry: Wallet already registered\\\");\\n        \\n        // Check if ENS name is already taken (if provided)\\n        if (bytes(_ensName).length > 0) {\\n            require(!registeredEnsNames[_ensName], \\\"CitizenRegistry: ENS name already registered\\\");\\n        }\\n\\n        // Increment citizen ID counter\\n        _citizenIdCounter++;\\n        uint256 newCitizenId = _citizenIdCounter;\\n\\n        // Determine verification level based on EFP data\\n        VerificationLevel verificationLevel = _determineVerificationLevel(_efpFollowers, _efpFollowing);\\n\\n        // Create citizen profile\\n        citizens[newCitizenId] = CitizenProfile({\\n            citizenId: newCitizenId,\\n            walletAddress: msg.sender,\\n            ensName: _ensName,\\n            efpTokenId: _efpTokenId,\\n            efpFollowers: _efpFollowers,\\n            efpFollowing: _efpFollowing,\\n            verificationLevel: verificationLevel,\\n            registrationTimestamp: block.timestamp,\\n            lastUpdateTimestamp: block.timestamp,\\n            isActive: true,\\n            reputationScore: 0, // Will be updated by reputation contract\\n            ipfsMetadata: _ipfsMetadata\\n        });\\n\\n        // Update mappings\\n        walletToCitizenId[msg.sender] = newCitizenId;\\n        if (bytes(_ensName).length > 0) {\\n            ensNameToCitizenId[_ensName] = newCitizenId;\\n            registeredEnsNames[_ensName] = true;\\n        }\\n\\n        emit CitizenRegistered(newCitizenId, msg.sender, _ensName, verificationLevel);\\n    }\\n\\n    /**\\n     * @dev Simplified registration for wallet-only users (hackathon-friendly)\\n     * Automatically generates ENS subdomain and placeholder EFP data\\n     */\\n    function registerCitizenSimple() external nonReentrant {\\n        require(walletToCitizenId[msg.sender] == 0, \\\"CitizenRegistry: Wallet already registered\\\");\\n\\n        // Generate automatic ENS subdomain using last 6 chars of address\\n        string memory addressSuffix = Strings.toHexString(uint160(msg.sender) & 0xFFFFFF, 3);\\n        string memory autoEnsName = string(abi.encodePacked(\\\"citizen\\\", addressSuffix, \\\".citiproof.eth\\\"));\\n        \\n        // Ensure generated name is unique (highly unlikely to collide)\\n        require(!registeredEnsNames[autoEnsName], \\\"CitizenRegistry: Generated ENS name collision\\\");\\n\\n        // Create with minimal verification data (can be updated later)\\n        _citizenIdCounter++;\\n        uint256 newCitizenId = _citizenIdCounter;\\n\\n        citizens[newCitizenId] = CitizenProfile({\\n            citizenId: newCitizenId,\\n            walletAddress: msg.sender,\\n            ensName: autoEnsName,\\n            efpTokenId: \\\"\\\", // Can be added later\\n            efpFollowers: 0,\\n            efpFollowing: 0,\\n            verificationLevel: VerificationLevel.UNVERIFIED,\\n            registrationTimestamp: block.timestamp,\\n            lastUpdateTimestamp: block.timestamp,\\n            isActive: true,\\n            reputationScore: 0,\\n            ipfsMetadata: \\\"\\\"\\n        });\\n\\n        // Update mappings\\n        walletToCitizenId[msg.sender] = newCitizenId;\\n        ensNameToCitizenId[autoEnsName] = newCitizenId;\\n        registeredEnsNames[autoEnsName] = true;\\n\\n        emit CitizenRegistered(newCitizenId, msg.sender, autoEnsName, VerificationLevel.UNVERIFIED);\\n    }\\n\\n    /**\\n     * @dev Update citizen's EFP verification data\\n     * @param _efpTokenId New EFP token ID\\n     * @param _efpFollowers Updated follower count\\n     * @param _efpFollowing Updated following count\\n     */\\n    function updateEFPVerification(\\n        string memory _efpTokenId,\\n        uint256 _efpFollowers,\\n        uint256 _efpFollowing\\n    ) external onlyRegisteredCitizen {\\n        uint256 citizenId = walletToCitizenId[msg.sender];\\n        CitizenProfile storage citizen = citizens[citizenId];\\n\\n        VerificationLevel oldLevel = citizen.verificationLevel;\\n        VerificationLevel newLevel = _determineVerificationLevel(_efpFollowers, _efpFollowing);\\n\\n        // Update EFP data\\n        citizen.efpTokenId = _efpTokenId;\\n        citizen.efpFollowers = _efpFollowers;\\n        citizen.efpFollowing = _efpFollowing;\\n        citizen.verificationLevel = newLevel;\\n        citizen.lastUpdateTimestamp = block.timestamp;\\n\\n        if (oldLevel != newLevel) {\\n            emit CitizenVerificationUpdated(citizenId, msg.sender, oldLevel, newLevel);\\n        }\\n\\n        emit CitizenProfileUpdated(citizenId, msg.sender, citizen.ensName, _efpTokenId);\\n    }\\n\\n    /**\\n     * @dev Update citizen's ENS name\\n     * @param _ensName New ENS name\\n     */\\n    function updateENSName(string memory _ensName) external onlyRegisteredCitizen {\\n        require(bytes(_ensName).length > 0, \\\"CitizenRegistry: ENS name cannot be empty\\\");\\n        require(!registeredEnsNames[_ensName], \\\"CitizenRegistry: ENS name already registered\\\");\\n\\n        uint256 citizenId = walletToCitizenId[msg.sender];\\n        CitizenProfile storage citizen = citizens[citizenId];\\n\\n        // Remove old ENS name from registry\\n        if (bytes(citizen.ensName).length > 0) {\\n            registeredEnsNames[citizen.ensName] = false;\\n            delete ensNameToCitizenId[citizen.ensName];\\n        }\\n\\n        // Set new ENS name\\n        citizen.ensName = _ensName;\\n        citizen.lastUpdateTimestamp = block.timestamp;\\n        ensNameToCitizenId[_ensName] = citizenId;\\n        registeredEnsNames[_ensName] = true;\\n\\n        emit CitizenProfileUpdated(citizenId, msg.sender, _ensName, citizen.efpTokenId);\\n    }\\n\\n    /**\\n     * @dev Update reputation score (only called by reputation contract)\\n     * @param _citizenId Citizen ID\\n     * @param _reputationScore New reputation score\\n     */\\n    function updateReputationScore(\\n        uint256 _citizenId,\\n        uint256 _reputationScore\\n    ) external validCitizenId(_citizenId) {\\n        // TODO: Add access control for reputation contract\\n        // require(msg.sender == reputationContract, \\\"CitizenRegistry: Only reputation contract can update scores\\\");\\n        \\n        citizens[_citizenId].reputationScore = _reputationScore;\\n        citizens[_citizenId].lastUpdateTimestamp = block.timestamp;\\n\\n        // Check if reputation score qualifies for premium verification\\n        if (_reputationScore >= 1000 && citizens[_citizenId].verificationLevel != VerificationLevel.PREMIUM) {\\n            VerificationLevel oldLevel = citizens[_citizenId].verificationLevel;\\n            citizens[_citizenId].verificationLevel = VerificationLevel.PREMIUM;\\n            emit CitizenVerificationUpdated(\\n                _citizenId, \\n                citizens[_citizenId].walletAddress, \\n                oldLevel, \\n                VerificationLevel.PREMIUM\\n            );\\n        }\\n    }\\n\\n    /**\\n     * @dev Deactivate a citizen account (admin function)\\n     * @param _citizenId Citizen ID to deactivate\\n     */\\n    function deactivateCitizen(uint256 _citizenId) external onlyOwner validCitizenId(_citizenId) {\\n        citizens[_citizenId].isActive = false;\\n        citizens[_citizenId].lastUpdateTimestamp = block.timestamp;\\n\\n        emit CitizenDeactivated(\\n            _citizenId,\\n            citizens[_citizenId].walletAddress,\\n            msg.sender\\n        );\\n    }\\n\\n    /**\\n     * @dev Reactivate a citizen account (admin function)\\n     * @param _citizenId Citizen ID to reactivate\\n     */\\n    function reactivateCitizen(uint256 _citizenId) external onlyOwner validCitizenId(_citizenId) {\\n        citizens[_citizenId].isActive = true;\\n        citizens[_citizenId].lastUpdateTimestamp = block.timestamp;\\n    }\\n\\n    // View functions\\n    function getCitizen(uint256 _citizenId) external view validCitizenId(_citizenId) returns (CitizenProfile memory) {\\n        return citizens[_citizenId];\\n    }\\n\\n    function getCitizenByWallet(address _wallet) external view returns (CitizenProfile memory) {\\n        uint256 citizenId = walletToCitizenId[_wallet];\\n        require(citizenId != 0, \\\"CitizenRegistry: Wallet not registered\\\");\\n        return citizens[citizenId];\\n    }\\n\\n    function getCitizenByENS(string memory _ensName) external view returns (CitizenProfile memory) {\\n        uint256 citizenId = ensNameToCitizenId[_ensName];\\n        require(citizenId != 0, \\\"CitizenRegistry: ENS name not registered\\\");\\n        return citizens[citizenId];\\n    }\\n\\n    function isCitizenRegistered(address _wallet) external view returns (bool) {\\n        return walletToCitizenId[_wallet] != 0 && citizens[walletToCitizenId[_wallet]].isActive;\\n    }\\n\\n    function getTotalCitizens() external view returns (uint256) {\\n        return _citizenIdCounter;\\n    }\\n\\n    function getVerificationLevel(address _wallet) external view returns (VerificationLevel) {\\n        uint256 citizenId = walletToCitizenId[_wallet];\\n        require(citizenId != 0, \\\"CitizenRegistry: Wallet not registered\\\");\\n        return citizens[citizenId].verificationLevel;\\n    }\\n\\n    function isENSNameAvailable(string memory _ensName) external view returns (bool) {\\n        return !registeredEnsNames[_ensName];\\n    }\\n\\n    // Internal functions\\n    function _determineVerificationLevel(uint256 _followers, uint256 _following) internal pure returns (VerificationLevel) {\\n        if (_followers == 0 && _following == 0) {\\n            return VerificationLevel.UNVERIFIED;\\n        } else if (_followers < 50) {\\n            return VerificationLevel.BASIC;\\n        } else {\\n            return VerificationLevel.VERIFIED;\\n        }\\n    }\\n\\n    // Batch operations for efficiency\\n    function getCitizensBatch(uint256[] memory _citizenIds) \\n        external \\n        view \\n        returns (CitizenProfile[] memory) \\n    {\\n        CitizenProfile[] memory profiles = new CitizenProfile[](_citizenIds.length);\\n        for (uint256 i = 0; i < _citizenIds.length; i++) {\\n            if (_citizenIds[i] > 0 && _citizenIds[i] <= _citizenIdCounter) {\\n                profiles[i] = citizens[_citizenIds[i]];\\n            }\\n        }\\n        return profiles;\\n    }\\n\\n    function getActiveCitizensCount() external view returns (uint256) {\\n        uint256 activeCount = 0;\\n        for (uint256 i = 1; i <= _citizenIdCounter; i++) {\\n            if (citizens[i].isActive) {\\n                activeCount++;\\n            }\\n        }\\n        return activeCount;\\n    }\\n}\",\"keccak256\":\"0x558f50048caa6b475ee31972fae16eee3985777f19dbd9882a6d86277223d533\",\"license\":\"MIT\"},\"contracts/GovernmentProjectRegistry.sol\":{\"content\":\"// SPDX-License-Identifier: MIT\\npragma solidity ^0.8.19;\\n\\nimport \\\"@openzeppelin/contracts/access/Ownable.sol\\\";\\nimport \\\"@openzeppelin/contracts/utils/ReentrancyGuard.sol\\\";\\nimport \\\"./CitizenIdentityRegistry.sol\\\";\\n\\n/**\\n * @title GovernmentProjectRegistry\\n * @dev Manages all government projects and their lifecycle\\n * @author CitiProof Team\\n */\\ncontract GovernmentProjectRegistry is Ownable, ReentrancyGuard {\\n    \\n    CitizenIdentityRegistry public immutable citizenRegistry;\\n    \\n    // Project status enumeration\\n    enum ProjectStatus {\\n        PROPOSED,      // Project proposed but not approved\\n        APPROVED,      // Project approved and funded\\n        IN_PROGRESS,   // Project execution started\\n        COMPLETED,     // Project completed successfully\\n        CANCELLED,     // Project cancelled\\n        UNDER_REVIEW   // Project under audit/review\\n    }\\n    \\n    // Project category enumeration\\n    enum ProjectCategory {\\n        INFRASTRUCTURE,\\n        HEALTHCARE,\\n        EDUCATION,\\n        ENVIRONMENT,\\n        SOCIAL_SERVICES,\\n        TECHNOLOGY,\\n        SECURITY,\\n        ECONOMIC_DEVELOPMENT,\\n        OTHER\\n    }\\n    \\n    // Project milestone structure\\n    struct ProjectMilestone {\\n        uint256 milestoneId;\\n        string title;\\n        string description;\\n        uint256 targetDate;\\n        uint256 completionDate;\\n        uint256 budgetAllocated;\\n        uint256 budgetSpent;\\n        bool isCompleted;\\n        string evidenceHash; // IPFS hash of completion evidence\\n    }\\n    \\n    // Main project structure\\n    struct Project {\\n        uint256 projectId;\\n        string title;\\n        string description;\\n        ProjectCategory category;\\n        ProjectStatus status;\\n        address governmentEntity; // Government wallet that created the project\\n        uint256 totalBudget;\\n        uint256 budgetSpent;\\n        uint256 startDate;\\n        uint256 estimatedEndDate;\\n        uint256 actualEndDate;\\n        string documentationHash; // IPFS hash for project documents\\n        uint256 citizenSupportScore; // Based on citizen votes/feedback\\n        bool isPublic; // Whether project details are public\\n        uint256 creationTimestamp;\\n        uint256 lastUpdateTimestamp;\\n    }\\n    \\n    // Storage\\n    uint256 private _projectIdCounter;\\n    mapping(uint256 => Project) public projects;\\n    mapping(uint256 => ProjectMilestone[]) public projectMilestones;\\n    mapping(uint256 => mapping(uint256 => bool)) public milestoneCompleted; // projectId => milestoneId => completed\\n    mapping(address => bool) public authorizedGovernmentEntities;\\n    mapping(uint256 => uint256[]) public categoryProjects; // category => projectIds\\n    mapping(address => uint256[]) public governmentEntityProjects; // entity => projectIds\\n    \\n    // Events\\n    event ProjectCreated(\\n        uint256 indexed projectId,\\n        string title,\\n        ProjectCategory category,\\n        address indexed governmentEntity,\\n        uint256 totalBudget\\n    );\\n    \\n    event ProjectStatusUpdated(\\n        uint256 indexed projectId,\\n        ProjectStatus oldStatus,\\n        ProjectStatus newStatus,\\n        address indexed updatedBy\\n    );\\n    \\n    event ProjectMilestoneAdded(\\n        uint256 indexed projectId,\\n        uint256 milestoneId,\\n        string title,\\n        uint256 targetDate,\\n        uint256 budgetAllocated\\n    );\\n    \\n    event ProjectMilestoneCompleted(\\n        uint256 indexed projectId,\\n        uint256 milestoneId,\\n        uint256 completionDate,\\n        uint256 actualBudgetSpent,\\n        string evidenceHash\\n    );\\n    \\n    event ProjectBudgetUpdated(\\n        uint256 indexed projectId,\\n        uint256 previousBudget,\\n        uint256 newBudget,\\n        address indexed updatedBy\\n    );\\n    \\n    event GovernmentEntityAuthorized(\\n        address indexed entity,\\n        bool authorized,\\n        address indexed authorizedBy\\n    );\\n    \\n    // Modifiers\\n    modifier onlyAuthorizedGovernment() {\\n        require(authorizedGovernmentEntities[msg.sender], \\\"ProjectRegistry: Not authorized government entity\\\");\\n        _;\\n    }\\n    \\n    modifier validProjectId(uint256 _projectId) {\\n        require(_projectId > 0 && _projectId <= _projectIdCounter, \\\"ProjectRegistry: Invalid project ID\\\");\\n        _;\\n    }\\n    \\n    modifier onlyProjectOwner(uint256 _projectId) {\\n        require(projects[_projectId].governmentEntity == msg.sender, \\\"ProjectRegistry: Not project owner\\\");\\n        _;\\n    }\\n    \\n    constructor(\\n        address initialOwner,\\n        address _citizenRegistry\\n    ) Ownable(initialOwner) {\\n        require(_citizenRegistry != address(0), \\\"ProjectRegistry: Invalid citizen registry\\\");\\n        citizenRegistry = CitizenIdentityRegistry(_citizenRegistry);\\n    }\\n    \\n    /**\\n     * @dev Create a new government project\\n     */\\n    function createProject(\\n        string memory _title,\\n        string memory _description,\\n        ProjectCategory _category,\\n        uint256 _totalBudget,\\n        uint256 _estimatedEndDate,\\n        string memory _documentationHash,\\n        bool _isPublic\\n    ) external onlyAuthorizedGovernment nonReentrant {\\n        require(bytes(_title).length > 0, \\\"ProjectRegistry: Title cannot be empty\\\");\\n        require(_totalBudget > 0, \\\"ProjectRegistry: Budget must be greater than 0\\\");\\n        require(_estimatedEndDate > block.timestamp, \\\"ProjectRegistry: End date must be in future\\\");\\n        \\n        _projectIdCounter++;\\n        uint256 newProjectId = _projectIdCounter;\\n        \\n        projects[newProjectId] = Project({\\n            projectId: newProjectId,\\n            title: _title,\\n            description: _description,\\n            category: _category,\\n            status: ProjectStatus.PROPOSED,\\n            governmentEntity: msg.sender,\\n            totalBudget: _totalBudget,\\n            budgetSpent: 0,\\n            startDate: 0, // Will be set when approved\\n            estimatedEndDate: _estimatedEndDate,\\n            actualEndDate: 0,\\n            documentationHash: _documentationHash,\\n            citizenSupportScore: 0,\\n            isPublic: _isPublic,\\n            creationTimestamp: block.timestamp,\\n            lastUpdateTimestamp: block.timestamp\\n        });\\n        \\n        // Add to category and entity mappings\\n        categoryProjects[uint256(_category)].push(newProjectId);\\n        governmentEntityProjects[msg.sender].push(newProjectId);\\n        \\n        emit ProjectCreated(newProjectId, _title, _category, msg.sender, _totalBudget);\\n    }\\n    \\n    /**\\n     * @dev Update project status\\n     */\\n    function updateProjectStatus(\\n        uint256 _projectId,\\n        ProjectStatus _newStatus\\n    ) external validProjectId(_projectId) onlyProjectOwner(_projectId) {\\n        Project storage project = projects[_projectId];\\n        ProjectStatus oldStatus = project.status;\\n        \\n        require(oldStatus != _newStatus, \\\"ProjectRegistry: Status unchanged\\\");\\n        require(_isValidStatusTransition(oldStatus, _newStatus), \\\"ProjectRegistry: Invalid status transition\\\");\\n        \\n        project.status = _newStatus;\\n        project.lastUpdateTimestamp = block.timestamp;\\n        \\n        // Set start date when approved\\n        if (_newStatus == ProjectStatus.APPROVED && project.startDate == 0) {\\n            project.startDate = block.timestamp;\\n        }\\n        \\n        // Set completion date when completed\\n        if (_newStatus == ProjectStatus.COMPLETED && project.actualEndDate == 0) {\\n            project.actualEndDate = block.timestamp;\\n        }\\n        \\n        emit ProjectStatusUpdated(_projectId, oldStatus, _newStatus, msg.sender);\\n    }\\n    \\n    /**\\n     * @dev Add milestone to project\\n     */\\n    function addProjectMilestone(\\n        uint256 _projectId,\\n        string memory _title,\\n        string memory _description,\\n        uint256 _targetDate,\\n        uint256 _budgetAllocated\\n    ) external validProjectId(_projectId) onlyProjectOwner(_projectId) {\\n        require(bytes(_title).length > 0, \\\"ProjectRegistry: Milestone title cannot be empty\\\");\\n        require(_targetDate > block.timestamp, \\\"ProjectRegistry: Target date must be in future\\\");\\n        require(_budgetAllocated > 0, \\\"ProjectRegistry: Budget must be greater than 0\\\");\\n        \\n        Project storage project = projects[_projectId];\\n        require(project.status == ProjectStatus.APPROVED || project.status == ProjectStatus.IN_PROGRESS, \\n                \\\"ProjectRegistry: Project must be approved or in progress\\\");\\n        \\n        uint256 milestoneId = projectMilestones[_projectId].length + 1;\\n        \\n        ProjectMilestone memory newMilestone = ProjectMilestone({\\n            milestoneId: milestoneId,\\n            title: _title,\\n            description: _description,\\n            targetDate: _targetDate,\\n            completionDate: 0,\\n            budgetAllocated: _budgetAllocated,\\n            budgetSpent: 0,\\n            isCompleted: false,\\n            evidenceHash: \\\"\\\"\\n        });\\n        \\n        projectMilestones[_projectId].push(newMilestone);\\n        \\n        emit ProjectMilestoneAdded(_projectId, milestoneId, _title, _targetDate, _budgetAllocated);\\n    }\\n    \\n    /**\\n     * @dev Complete project milestone\\n     */\\n    function completeProjectMilestone(\\n        uint256 _projectId,\\n        uint256 _milestoneId,\\n        uint256 _actualBudgetSpent,\\n        string memory _evidenceHash\\n    ) external validProjectId(_projectId) onlyProjectOwner(_projectId) {\\n        require(_milestoneId > 0 && _milestoneId <= projectMilestones[_projectId].length, \\n                \\\"ProjectRegistry: Invalid milestone ID\\\");\\n        require(!milestoneCompleted[_projectId][_milestoneId], \\\"ProjectRegistry: Milestone already completed\\\");\\n        require(bytes(_evidenceHash).length > 0, \\\"ProjectRegistry: Evidence hash required\\\");\\n        \\n        ProjectMilestone storage milestone = projectMilestones[_projectId][_milestoneId - 1];\\n        Project storage project = projects[_projectId];\\n        \\n        require(_actualBudgetSpent <= milestone.budgetAllocated, \\\"ProjectRegistry: Spent exceeds allocated budget\\\");\\n        require(project.budgetSpent + _actualBudgetSpent <= project.totalBudget, \\n                \\\"ProjectRegistry: Total spent would exceed project budget\\\");\\n        \\n        // Update milestone\\n        milestone.isCompleted = true;\\n        milestone.completionDate = block.timestamp;\\n        milestone.budgetSpent = _actualBudgetSpent;\\n        milestone.evidenceHash = _evidenceHash;\\n        milestoneCompleted[_projectId][_milestoneId] = true;\\n        \\n        // Update project budget\\n        project.budgetSpent += _actualBudgetSpent;\\n        project.lastUpdateTimestamp = block.timestamp;\\n        \\n        // Update project status to in progress if not already\\n        if (project.status == ProjectStatus.APPROVED) {\\n            project.status = ProjectStatus.IN_PROGRESS;\\n            emit ProjectStatusUpdated(_projectId, ProjectStatus.APPROVED, ProjectStatus.IN_PROGRESS, msg.sender);\\n        }\\n        \\n        emit ProjectMilestoneCompleted(_projectId, _milestoneId, block.timestamp, _actualBudgetSpent, _evidenceHash);\\n    }\\n    \\n    /**\\n     * @dev Update project budget (owner or admin only)\\n     */\\n    function updateProjectBudget(\\n        uint256 _projectId,\\n        uint256 _newBudget\\n    ) external validProjectId(_projectId) {\\n        require(\\n            msg.sender == projects[_projectId].governmentEntity || msg.sender == owner(),\\n            \\\"ProjectRegistry: Not authorized to update budget\\\"\\n        );\\n        require(_newBudget > 0, \\\"ProjectRegistry: Budget must be greater than 0\\\");\\n        \\n        Project storage project = projects[_projectId];\\n        require(_newBudget >= project.budgetSpent, \\\"ProjectRegistry: New budget less than already spent\\\");\\n        \\n        uint256 previousBudget = project.totalBudget;\\n        project.totalBudget = _newBudget;\\n        project.lastUpdateTimestamp = block.timestamp;\\n        \\n        emit ProjectBudgetUpdated(_projectId, previousBudget, _newBudget, msg.sender);\\n    }\\n    \\n    /**\\n     * @dev Update citizen support score (called by voting contract)\\n     */\\n    function updateCitizenSupportScore(\\n        uint256 _projectId,\\n        uint256 _supportScore\\n    ) external validProjectId(_projectId) {\\n        // TODO: Add access control for voting contract\\n        // require(msg.sender == votingContract, \\\"ProjectRegistry: Only voting contract can update support\\\");\\n        \\n        projects[_projectId].citizenSupportScore = _supportScore;\\n        projects[_projectId].lastUpdateTimestamp = block.timestamp;\\n    }\\n    \\n    // View functions\\n    function getProject(uint256 _projectId) external view validProjectId(_projectId) returns (Project memory) {\\n        Project memory project = projects[_projectId];\\n        require(project.isPublic || msg.sender == project.governmentEntity || msg.sender == owner(), \\n                \\\"ProjectRegistry: Project is not public\\\");\\n        return project;\\n    }\\n    \\n    function getProjectMilestones(uint256 _projectId) external view validProjectId(_projectId) returns (ProjectMilestone[] memory) {\\n        Project memory project = projects[_projectId];\\n        require(project.isPublic || msg.sender == project.governmentEntity || msg.sender == owner(), \\n                \\\"ProjectRegistry: Project is not public\\\");\\n        return projectMilestones[_projectId];\\n    }\\n    \\n    function getProjectsByCategory(ProjectCategory _category) external view returns (uint256[] memory) {\\n        return categoryProjects[uint256(_category)];\\n    }\\n    \\n    function getProjectsByGovernmentEntity(address _entity) external view returns (uint256[] memory) {\\n        return governmentEntityProjects[_entity];\\n    }\\n    \\n    function getProjectsByStatus(ProjectStatus _status) external view returns (uint256[] memory) {\\n        uint256[] memory result = new uint256[](_projectIdCounter);\\n        uint256 count = 0;\\n        \\n        for (uint256 i = 1; i <= _projectIdCounter; i++) {\\n            if (projects[i].status == _status && (projects[i].isPublic || msg.sender == owner())) {\\n                result[count] = i;\\n                count++;\\n            }\\n        }\\n        \\n        // Resize array to actual count\\n        uint256[] memory finalResult = new uint256[](count);\\n        for (uint256 i = 0; i < count; i++) {\\n            finalResult[i] = result[i];\\n        }\\n        \\n        return finalResult;\\n    }\\n    \\n    function getProjectStats() external view returns (\\n        uint256 totalProjects,\\n        uint256 approvedProjects,\\n        uint256 inProgressProjects,\\n        uint256 completedProjects,\\n        uint256 totalBudgetAllocated,\\n        uint256 totalBudgetSpent\\n    ) {\\n        uint256 approved = 0;\\n        uint256 inProgress = 0;\\n        uint256 completed = 0;\\n        uint256 totalAllocated = 0;\\n        uint256 totalSpent = 0;\\n        \\n        for (uint256 i = 1; i <= _projectIdCounter; i++) {\\n            Project storage project = projects[i];\\n            \\n            if (project.status == ProjectStatus.APPROVED) approved++;\\n            else if (project.status == ProjectStatus.IN_PROGRESS) inProgress++;\\n            else if (project.status == ProjectStatus.COMPLETED) completed++;\\n            \\n            totalAllocated += project.totalBudget;\\n            totalSpent += project.budgetSpent;\\n        }\\n        \\n        return (_projectIdCounter, approved, inProgress, completed, totalAllocated, totalSpent);\\n    }\\n    \\n    function getTotalProjects() external view returns (uint256) {\\n        return _projectIdCounter;\\n    }\\n    \\n    function getProjectProgress(uint256 _projectId) external view validProjectId(_projectId) returns (\\n        uint256 totalMilestones,\\n        uint256 completedMilestones,\\n        uint256 budgetUtilization // percentage in basis points (10000 = 100%)\\n    ) {\\n        Project memory project = projects[_projectId];\\n        require(project.isPublic || msg.sender == project.governmentEntity || msg.sender == owner(), \\n                \\\"ProjectRegistry: Project is not public\\\");\\n        \\n        ProjectMilestone[] memory milestones = projectMilestones[_projectId];\\n        uint256 completed = 0;\\n        \\n        for (uint256 i = 0; i < milestones.length; i++) {\\n            if (milestones[i].isCompleted) {\\n                completed++;\\n            }\\n        }\\n        \\n        uint256 utilization = project.totalBudget > 0 ? \\n                             (project.budgetSpent * 10000) / project.totalBudget : 0;\\n        \\n        return (milestones.length, completed, utilization);\\n    }\\n    \\n    // Internal functions\\n    function _isValidStatusTransition(ProjectStatus _from, ProjectStatus _to) internal pure returns (bool) {\\n        if (_from == ProjectStatus.PROPOSED) {\\n            return _to == ProjectStatus.APPROVED || _to == ProjectStatus.CANCELLED;\\n        } else if (_from == ProjectStatus.APPROVED) {\\n            return _to == ProjectStatus.IN_PROGRESS || _to == ProjectStatus.CANCELLED;\\n        } else if (_from == ProjectStatus.IN_PROGRESS) {\\n            return _to == ProjectStatus.COMPLETED || _to == ProjectStatus.UNDER_REVIEW || _to == ProjectStatus.CANCELLED;\\n        } else if (_from == ProjectStatus.UNDER_REVIEW) {\\n            return _to == ProjectStatus.COMPLETED || _to == ProjectStatus.IN_PROGRESS;\\n        }\\n        return false; // COMPLETED and CANCELLED are final states\\n    }\\n    \\n    // Admin functions\\n    function authorizeGovernmentEntity(address _entity, bool _authorized) external onlyOwner {\\n        require(_entity != address(0), \\\"ProjectRegistry: Invalid entity address\\\");\\n        authorizedGovernmentEntities[_entity] = _authorized;\\n        emit GovernmentEntityAuthorized(_entity, _authorized, msg.sender);\\n    }\\n    \\n    function emergencyUpdateProject(\\n        uint256 _projectId,\\n        ProjectStatus _status,\\n        uint256 _newBudget\\n    ) external onlyOwner validProjectId(_projectId) {\\n        Project storage project = projects[_projectId];\\n        ProjectStatus oldStatus = project.status;\\n        \\n        if (_status != oldStatus) {\\n            project.status = _status;\\n            emit ProjectStatusUpdated(_projectId, oldStatus, _status, msg.sender);\\n        }\\n        \\n        if (_newBudget != project.totalBudget && _newBudget >= project.budgetSpent) {\\n            uint256 previousBudget = project.totalBudget;\\n            project.totalBudget = _newBudget;\\n            emit ProjectBudgetUpdated(_projectId, previousBudget, _newBudget, msg.sender);\\n        }\\n        \\n        project.lastUpdateTimestamp = block.timestamp;\\n    }\\n    \\n    function setProjectPublic(uint256 _projectId, bool _isPublic) external onlyOwner validProjectId(_projectId) {\\n        projects[_projectId].isPublic = _isPublic;\\n        projects[_projectId].lastUpdateTimestamp = block.timestamp;\\n    }\\n}\",\"keccak256\":\"0x82263b72f0b4d03e19ff3e708c65bc90b901705625b820770a74107879ef7ce2\",\"license\":\"MIT\"}},\"version\":1}",
+  "bytecode": "0x60a0346200014557601f620033ea38819003918201601f19168301916001600160401b038311848410176200014a57808492604094855283398101031262000145576200005a6020620000528362000160565b920162000160565b6001600160a01b03918216919082156200012c57600080546001600160a01b03198116851782556040519491908416907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e09080a36001805516908115620000d85750608052604051613274908162000176823960805181611da00152f35b62461bcd60e51b815260206004820152602960248201527f50726f6a65637452656769737472793a20496e76616c696420636974697a656e60448201526820726567697374727960b81b6064820152608490fd5b604051631e4fbdf760e01b815260006004820152602490fd5b600080fd5b634e487b7160e01b600052604160045260246000fd5b51906001600160a01b0382168203620001455756fe608080604052600436101561001357600080fd5b60003560e01c908163077a413814612c21575080630e617ad114612934578063107046bd146127fc578063117bb4fc14612789578063178faadf146120105780631aa22bba14611ef85780632d6c166114611dcf578063386ca89d14611d8a5780633f72679414611d3f57806352766d8014611a225780636cb0adba14611950578063715018a6146118f7578063812739a2146118d957806382c8b9f214611749578063888f83cf146116ff5780638da5cb5b146116d6578063a06564ec1461159f578063a14a989b14611560578063b2c6f00c14611521578063bc2e6e3a146114ad578063d09e5d1a14610d79578063d11d498b14610b91578063e6bc558f14610ab0578063f0f3f2c8146107d4578063f2fde38b14610746578063f33a0f37146106be5763f57aa13e1461014857600080fd5b346106b95760803660031901126106b9576001600160401b03606480358281116106b95761017a903690600401612e38565b906004351515806106ab575b61018f90613007565b60043560005260036020526101b860018060a01b0360036040600020015460101c16331461305f565b60243515158061068f575b1561063d576004356000526005602052604060002060243560005260205260ff604060002054166105e457815115610590576004356000526004602052604060002060001960243501602435811161057a5761021e91612e9d565b50600435600052600360205260406000209160058201546044351161051e5761024d60443560058501546130b6565b6004840154106104b4575060078101805460ff191660011790554260048201556044356006820155825193841161049e5761028b6008820154612c6a565b601f8111610457575b50602093601f81116001146103e85780600891600395966000916103dd575b508160011b9160001990871b1c1916179101555b600435600052600560205260406000206024356000526020526040600020600160ff1982541617905561030060443560058301546130b6565b600582015542600d82015501805460ff8160081c1660068110156103c75760011461037c575b827ffb15ee8621c32981c56af0c27e6fe61690ee459aa74c834c3890d9428bb3d348604051602435815242602082015260443560408201526080606082015280610377600435946080830190612da3565b0390a2005b6102009061ff001916179055604051600181526002602082015233907f34072acb75c09ae10925fc3e49e83b7032ac9d6ac265c11c1a1d8b3a00f4753b604060043592a33880610326565b634e487b7160e01b600052602160045260246000fd5b9050860151386102b3565b6008820160005260206000209460005b601f198316811061043f57508160039596600192600894601f19811610610427575b5050811b019101556102c7565b88015160001983891b60f8161c19169055388061041a565b858201518755600190960195602091820191016103f8565b600882016000526020600020601f860160051c810160208710610497575b601f830160051c8201811061048b575050610294565b60008155600101610475565b5080610475565b634e487b7160e01b600052604160045260246000fd5b6084907f6c64206578636565642070726f6a6563742062756467657400000000000000006040519162461bcd60e51b835260206004840152603860248401527f50726f6a65637452656769737472793a20546f74616c207370656e7420776f756044840152820152fd5b6084906e1b1b1bd8d85d195908189d5919d95d608a1b6040519162461bcd60e51b835260206004840152602f60248401527f50726f6a65637452656769737472793a205370656e74206578636565647320616044840152820152fd5b634e487b7160e01b600052601160045260246000fd5b60849066195c5d5a5c995960ca1b6040519162461bcd60e51b835260206004840152602760248401527f50726f6a65637452656769737472793a2045766964656e6365206861736820726044840152820152fd5b6084906b191e4818dbdb5c1b195d195960a21b6040519162461bcd60e51b835260206004840152602c60248401527f50726f6a65637452656769737472793a204d696c6573746f6e6520616c7265616044840152820152fd5b608490641b9948125160da1b6040519162461bcd60e51b835260206004840152602560248401527f50726f6a65637452656769737472793a20496e76616c6964206d696c6573746f6044840152820152fd5b50600435600052600460205260406000205460243511156101c3565b506002546004351115610186565b600080fd5b346106b9576020806003193601126106b9576001600160a01b036106e0612ecf565b1660005260088152604060002090604051908181845491828152019360005281600020916000905b82821061072f5761072b8561071f81890382612cdc565b60405191829182612dfd565b0390f35b835486529485019460019384019390910190610708565b346106b95760203660031901126106b95761075f612ecf565b610767612efd565b6001600160a01b039081169081156107bb57600054826bffffffffffffffffffffffff60a01b821617600055167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0600080a3005b604051631e4fbdf760e01b815260006004820152602490fd5b346106b95760203660031901126106b95760006101e06040516107f681612ca4565b82815260606020820152606060408201528260608201528260808201528260a08201528260c08201528260e0820152826101008201528261012082015282610140820152606061016082015282610180820152826101a0820152826101c0820152015260043580151580610aa4575b61086e90613007565b600052600360205260406000206040519061088882612ca4565b8054825261089860018201612cfd565b60208301526108a960028201612cfd565b604083015260038101546108c360ff821660608501612f9b565b6108d660ff8260081c1660808501612fa7565b60101c6001600160a01b031660a0830152600481015460c0830152600581015460e083015260068101546101008301526007810154610120830152600881015461014083015261092860098201612cfd565b610160830152600a810154610180830152600d60ff600b83015416159182156101a0850152600c8101546101c085015201546101e0830152801590610a8e575b8015610a7a575b610978906130c3565b604051809160208252805160208301526101e0610a496109c26109ac60208501516102006040880152610220870190612da3565b6040850151868203601f19016060880152612da3565b6109d460608501516080870190612de3565b6109e6608085015160a0870190612df0565b60018060a01b0360a08501511660c086015260c084015160e086015260e0840151610100860152610100840151610120860152610120840151610140860152610140840151610160860152610160840151601f1986830301610180870152612da3565b916101808101516101a08501526101a081015115156101c08501526101c08101518285015201516102008301520390f35b506000546001600160a01b0316331461096f565b5060a08101516001600160a01b03163314610968565b50600254811115610865565b346106b95760403660031901126106b957610ac9612ecf565b610ad1612e8e565b90610ada612efd565b6001600160a01b03168015610b3c57806000526006602052610b0c8260406000209060ff801983541691151516179055565b60405191151582527f2ca89697d004ea2d3eb322e383c08bf0978391315a84b01092922f4d8303e74560203393a3005b60405162461bcd60e51b815260206004820152602760248201527f50726f6a65637452656769737472793a20496e76616c696420656e74697479206044820152666164647265737360c81b6064820152608490fd5b346106b95760403660031901126106b95760243560043560068210156106b95780151580610d6d575b610bc390613007565b806000526003602052610bea60018060a01b0360036040600020015460101c16331461305f565b806000526003602052604060002091600383019060ff825460081c169360068510156103c757818514610d1e57610c21828661317b565b15610cc657610c3382610c6f94612fb3565b42600d8201556001821480610cba575b610caf575b6003821480610ca3575b610c97575b50610c656040518095612df0565b6020840190612df0565b7f34072acb75c09ae10925fc3e49e83b7032ac9d6ac265c11c1a1d8b3a00f4753b60403393a3005b60084291015584610c57565b50600881015415610c52565b426006820155610c48565b50600681015415610c43565b60405162461bcd60e51b815260206004820152602a60248201527f50726f6a65637452656769737472793a20496e76616c696420737461747573206044820152693a3930b739b4ba34b7b760b11b6064820152608490fd5b60405162461bcd60e51b815260206004820152602160248201527f50726f6a65637452656769737472793a2053746174757320756e6368616e67656044820152601960fa1b6064820152608490fd5b50600254811115610bba565b346106b95760a03660031901126106b9576024356001600160401b0381116106b957610da9903690600401612e38565b6044356001600160401b0381116106b957610dc8903690600401612e38565b9060043515158061149f575b610ddd90613007565b6004356000526003602052610e0660018060a01b0360036040600020015460101c16331461305f565b805115611441574260643511156113e557610e246084351515612f29565b600435600052600360205260ff60036040600020015460081c1660068110156103c757600181149081156113da575b501561136f5760043560005260046020526040600020549060018201821161057a5760405192610e8284612cc0565b600183018452816020850152604084015260643560608401526000608084015260843560a0840152600060c0840152600060e08401526040518060208101106001600160401b0360208301111761049e576020810160405260008152610100840152600435600052600460205260406000208054600160401b81101561049e57610f1191600182018155612e9d565b939093611359578051845560208101518051906001600160401b03821161049e578190610f416001880154612c6a565b601f8111611306575b50602090601f831160011461129457600092611289575b50508160011b916000199060031b1c19161760018501555b60408101518051906001600160401b03821161049e57610f9c6002870154612c6a565b601f8111611242575b50602090601f83116001146111ce57610100939291600091836111c3575b50508160011b916000199060031b1c19161760028601555b606081015160038601556080810151600486015560a0810151600586015560c0810151600686015561102260e08201511515600787019060ff801983541691151516179055565b01519283516001600160401b03811161049e576110426008830154612c6a565b601f8111611178575b506020601f82116001146110e457816110be9493926008927fa8304ebed06441bb13f6271b1a315727255515868c505df1a2b76da04fdcecca97986000926110d9575b50508160011b916000199060031b1c1916179101555b600160405194018452608060208501526080840190612da3565b916064356040820152608435606082015280600435930390a2005b01519050888061108e565b601f198216956008840160005260206000209660005b8181106111605750927fa8304ebed06441bb13f6271b1a315727255515868c505df1a2b76da04fdcecca9697600893600193836110be99989710611147575b505050811b019101556110a4565b015160001960f88460031b161c19169055888080611139565b838301518955600190980197602093840193016110fa565b600883016000526020600020601f830160051c810191602084106111b9575b601f0160051c01905b8181106111ad575061104b565b600081556001016111a0565b9091508190611197565b015190508780610fc3565b906002870160005260206000209160005b601f198516811061122a57509183916001936101009695601f19811610611211575b505050811b016002860155610fdb565b015160001960f88460031b161c19169055878080611201565b919260206001819286850151815501940192016111df565b600287016000526020600020601f840160051c810160208510611282575b601f830160051c82018110611276575050610fa5565b60008155600101611260565b5080611260565b015190508680610f61565b9250600187016000526020600020906000935b601f19841685106112eb576001945083601f198116106112d2575b505050811b016001850155610f79565b015160001960f88460031b161c191690558680806112c2565b818101518355602094850194600190930192909101906112a7565b909150600187016000526020600020601f840160051c810160208510611352575b90849392915b601f830160051c82018110611343575050610f4a565b6000815585945060010161132d565b5080611327565b634e487b7160e01b600052600060045260246000fd5b60405162461bcd60e51b815260206004820152603860248201527f50726f6a65637452656769737472793a2050726f6a656374206d75737420626560448201527f20617070726f766564206f7220696e2070726f677265737300000000000000006064820152608490fd5b600291501483610e53565b60405162461bcd60e51b815260206004820152602e60248201527f50726f6a65637452656769737472793a205461726765742064617465206d757360448201526d7420626520696e2066757475726560901b6064820152608490fd5b60405162461bcd60e51b815260206004820152603060248201527f50726f6a65637452656769737472793a204d696c6573746f6e65207469746c6560448201526f2063616e6e6f7420626520656d70747960801b6064820152608490fd5b506002546004351115610dd4565b346106b95760403660031901126106b9576004356114c9612e8e565b906114d2612efd565b80151580611515575b6114e490613007565b600052600360205261150a604060002091600b83019060ff801983541691151516179055565b600d42910155600080f35b506002548111156114db565b346106b95761152f36612c54565b906000526007602052604060002080548210156106b95760209161155291612ee5565b90546040519160031b1c8152f35b346106b95760203660031901126106b9576001600160a01b03611581612ecf565b166000526006602052602060ff604060002054166040519015158152f35b346106b95760603660031901126106b95760243560043560068210156106b957604435906115cb612efd565b801515806116ca575b6115dd90613007565b8060005260036020526040600020926003840160ff815460081c169160068310156103c757828103611677575b50505060048301918254928382141580611669575b61162c575b42600d860155005b81905560405192835260208301527fd95ec68e4659aae27f7a269da9a83bf4eb675f048d4800f45018f05ca7805d7960403393a381808080611624565b50600585015482101561161f565b6116848161169b93612fb3565b6116916040518094612df0565b6020830190612df0565b817f34072acb75c09ae10925fc3e49e83b7032ac9d6ac265c11c1a1d8b3a00f4753b60403393a383808061160a565b506002548111156115d4565b346106b95760003660031901126106b9576000546040516001600160a01b039091168152602090f35b346106b95760403660031901126106b957611718612ecf565b6001600160a01b03166000908152600860205260409020805460243591908210156106b95760209161155291612ee5565b346106b95761175736612c54565b90801515806118cd575b61176a90613007565b80600052600360205260018060a01b038060036040600020015460101c1633149081156118bf575b5015611861576117a3821515612f29565b806000526003602052604060002091600583015481106118005760048301928184549455600d4291015560405192835260208301527fd95ec68e4659aae27f7a269da9a83bf4eb675f048d4800f45018f05ca7805d7960403393a3005b60405162461bcd60e51b815260206004820152603360248201527f50726f6a65637452656769737472793a204e657720627564676574206c657373604482015272081d1a185b88185b1c9958591e481cdc195b9d606a1b6064820152608490fd5b60405162461bcd60e51b815260206004820152603060248201527f50726f6a65637452656769737472793a204e6f7420617574686f72697a65642060448201526f1d1bc81d5c19185d1948189d5919d95d60821b6064820152608490fd5b905060005416331483611792565b50600254811115611761565b346106b95760003660031901126106b9576020600254604051908152f35b346106b95760003660031901126106b957611910612efd565b600080546001600160a01b0319811682556001600160a01b03167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e08280a3005b346106b95761195e36612c54565b90600052600460205260406000209081548110156106b95761197f91612e9d565b50805461072b61199160018401612cfd565b9261199e60028201612cfd565b600382015491600481015460058201546006830154916119f86119cb600860ff6007880154169601612cfd565b956119ea6040519b8c9b8c5260208c61012091829101528c0190612da3565b908a820360408c0152612da3565b956060890152608088015260a087015260c0860152151560e0850152838203610100850152612da3565b346106b95760203660031901126106b957600435151580611d31575b611a4790613007565b60043560005260036020526040600020604051611a6381612ca4565b81548152611a7360018301612cfd565b6020820152611a8460028301612cfd565b60408201526003820154611a9e60ff821660608401612f9b565b611ab160ff8260081c1660808401612fa7565b60101c6001600160a01b031660a0820152600482015460c0820152600582015460e0820152600682015461010082015260078201546101208201526008820154610140820152611b0360098301612cfd565b610160820152600a82015461018082015260ff600b830154161591600d831591826101a0850152600c8101546101c085015201546101e083015291611d1a575b508015611d06575b611b54906130c3565b60043560005260046020526040600020805490611b708261311e565b91611b7e6040519384612cdc565b80835260208301809260005260206000206000915b838310611c7857848660405191829160208301906020845251809152604083019060408160051b85010192916000905b828210611bd257505050500390f35b91936001919395506020611c688192603f198a820301865288519081518152610100611c22611c108685015161012088860152610120850190612da3565b60408501518482036040860152612da3565b92606081015160608401526080810151608084015260a081015160a084015260c081015160c084015260e0810151151560e0840152015190610100818403910152612da3565b9601920192018594939192611bc3565b60096020600192604051611c8b81612cc0565b85548152611c9a858701612cfd565b83820152611caa60028701612cfd565b60408201526003860154606082015260048601546080820152600586015460a0820152600686015460c082015260ff600787015416151560e0820152611cf260088701612cfd565b610100820152815201920192019190611b93565b506000546001600160a01b03163314611b4b565b60a001516001600160a01b03163314905081611b43565b506002546004351115611a3e565b346106b957611d4d36612c54565b9080151580611d7e575b611d6090613007565b6000526003602052604060002090600a820155600d42910155600080f35b50600254811115611d57565b346106b95760003660031901126106b9576040517f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03168152602090f35b346106b95760003660031901126106b95760008060008060009160019384956002958654965b87891115611e2457505060c09650604051958652602086015260408501526060840152608083015260a0820152f35b90919492939795866000526003958660205260406000209660ff8189015460081c1660068110156103c757808603611e93575050611e89916005611e7a611e6d611e8394612f8c565b975b60048b0154906130b6565b980154906130b6565b96612f8c565b9793929190611df5565b95969195808503611ebb575050611e89916005611e7a611eb5611e8394612f8c565b98611e6f565b96919614611ed6575b611e89916005611e7a611e8393611e6f565b98611e89916005611e7a611eec611e8394612f8c565b9c935050509150611ec4565b346106b9576020806003193601126106b957600660043581811015806106b95760025490611f2582613135565b9460009460015b84811115611f7c578787611f3f81613135565b9160005b828110611f58576040518061072b8682612dfd565b80611f66611f779284613167565b51611f718287613167565b52612f8c565b611f43565b80600052600380845260ff8581836040600020015460081c16906103c757848110156103c75788149182611fdb575b5050611fc0575b611fbb90612f8c565b611f2c565b95611fd38188611f71611fbb948c613167565b969050611fb2565b909150826000528452600b60406000200154168015611ffc575b8980611fab565b506000546001600160a01b03163314611ff5565b346106b95760e03660031901126106b9576004356001600160401b0381116106b957612040903690600401612e38565b6024356001600160401b0381116106b95761205f903690600401612e38565b600960443510156106b95760a4356001600160401b0381116106b957612089903690600401612e38565b9060c43580151581036106b95733600052600660205260ff604060002054161561272a576002600154146127185760026001558351156126c4576120d06064351515612f29565b42608435111561266b576120e5600254612f8c565b9283600255604051926120f784612ca4565b848452856020850152604084015261211460443560608501612f9b565b600060808401523360a084015260643560c0840152600060e084015260006101008401526084356101208401526000610140840152610160830152600061018083015215156101a0820152426101c0820152426101e08201528160005260036020526040600020908051825560208101518051906001600160401b03821161049e5781906121a56001860154612c6a565b601f8111612618575b50602090601f83116001146125a65760009261259b575b50508160011b916000199060031b1c19161760018301555b60408101518051906001600160401b03821161049e5781906122026002860154612c6a565b601f8111612548575b50602090601f83116001146124d6576000926124cb575b50508160011b916000199060031b1c19161760028301555b606081015160098110156103c75760ff80196003850154169116176003830155608081015160068110156103c7576122759060038401612fb3565b60a081015160038301805462010000600160b01b03191660109290921b62010000600160b01b031691909117905560c0810151600483015560e081015160058301556101008101516006830155610120810151600783015561014081015160088301556101608101518051906001600160401b03821161049e576122fc6009850154612c6a565b601f8111612484575b50602090601f831160011461240e579180600d94926101e094600092612403575b50508160011b916000199060031b1c19161760098501555b610180810151600a8501556123696101a08201511515600b86019060ff801983541691151516179055565b6101c0810151600c85015501519101556044356000526007602052612392816040600020612fd2565b3360005260086020526123a9816040600020612fd2565b7fd4e81b4ac16013f47ac8a712d1babfa1cd6fdbd92951ef6a78c3688cbda631276123df60405193606085526060850190612da3565b926123ef60208201604435612de3565b60643560408201528033940390a360018055005b015190508880612326565b906009850160005260206000209160005b601f198516811061246c575092600d94926001926101e09583601f19811610612453575b505050811b01600985015561233e565b015160001960f88460031b161c19169055888080612443565b9192602060018192868501518155019401920161241f565b600985016000526020600020601f840160051c8101602085106124c4575b601f830160051c820181106124b8575050612305565b600081556001016124a2565b50806124a2565b015190508680612222565b9250600285016000526020600020906000935b601f198416851061252d576001945083601f19811610612514575b505050811b01600283015561223a565b015160001960f88460031b161c19169055868080612504565b818101518355602094850194600190930192909101906124e9565b909150600285016000526020600020601f840160051c810160208510612594575b90849392915b601f830160051c8201811061258557505061220b565b6000815585945060010161256f565b5080612569565b0151905086806121c5565b9250600185016000526020600020906000935b601f19841685106125fd576001945083601f198116106125e4575b505050811b0160018301556121dd565b015160001960f88460031b161c191690558680806125d4565b818101518355602094850194600190930192909101906125b9565b909150600185016000526020600020601f840160051c810160208510612664575b90849392915b601f830160051c820181106126555750506121ae565b6000815585945060010161263f565b5080612639565b60405162461bcd60e51b815260206004820152602b60248201527f50726f6a65637452656769737472793a20456e642064617465206d757374206260448201526a6520696e2066757475726560a81b6064820152608490fd5b60405162461bcd60e51b815260206004820152602660248201527f50726f6a65637452656769737472793a205469746c652063616e6e6f7420626560448201526520656d70747960d01b6064820152608490fd5b604051633ee5aeb560e01b8152600490fd5b60405162461bcd60e51b815260206004820152603160248201527f50726f6a65637452656769737472793a204e6f7420617574686f72697a656420604482015270676f7665726e6d656e7420656e7469747960781b6064820152608490fd5b346106b9576020806003193601126106b95760043560098110156106b95760005260078152604060002090604051908181845491828152019360005281600020916000905b8282106127e55761072b8561071f81890382612cdc565b8354865294850194600193840193909101906127ce565b346106b95760203660031901126106b9576004356000526003602052604060002080546001820161282c90612cfd565b9161283960028201612cfd565b600382015491600481015460058201549360068301549060078401546008850154906009860161286890612cfd565b93600a87015498600b88015460ff1696600c89015498600d0154996040519d8e9d8e528d61020090816020820152016128a091612da3565b8d810360408f01526128b191612da3565b956128c260608e0160ff8316612de3565b6128d660808e0160ff600884901c16612df0565b60101c6001600160a01b031660a08d015260c08c015260e08b01526101008a015261012089015261014088015286810361016088015261291591612da3565b9361018086015215156101a08501526101c08401526101e08301520390f35b346106b95760203660031901126106b957600435151580612c13575b61295990613007565b600435600052600360205260406000206040519061297682612ca4565b8054825261298660018201612cfd565b602083015261299760028201612cfd565b604083015260038101546129b160ff821660608501612f9b565b6129c460ff8260081c1660808501612fa7565b60101c6001600160a01b031660a0830152600481015460c0830152600581015460e0830152600681015461010083015260078101546101208301526008810154610140830152612a1660098201612cfd565b610160830152600a81015461018083015260ff600b820154161590600d821591826101a0860152600c8101546101c086015201546101e084015290612bfd575b8015612be9575b612a66906130c3565b600435600052600460205260406000208054612a818161311e565b91612a8f6040519384612cdc565b818352602083019060005260206000206000915b838310612b5b5785600086815b8151811015612af05760e0612ac58284613167565b510151612adb575b612ad690612f8c565b612ab0565b91612ae8612ad691612f8c565b929050612acd565b5060c083015115612b4f5760e0830151926127109384810294818604149015171561057a5760c001518015612b395760609304905b519160405192835260208301526040820152f35b634e487b7160e01b600052601260045260246000fd5b60609250600090612b25565b60096020600192604051612b6e81612cc0565b85548152612b7d858701612cfd565b83820152612b8d60028701612cfd565b60408201526003860154606082015260048601546080820152600586015460a0820152600686015460c082015260ff600787015416151560e0820152612bd560088701612cfd565b610100820152815201920192019190612aa3565b506000546001600160a01b03163314612a5d565b5060a08101516001600160a01b03163314612a56565b506002546004351115612950565b346106b957602090612c3236612c54565b9060005260058352604060002090600052825260ff6040600020541615158152f35b60409060031901126106b9576004359060243590565b90600182811c92168015612c9a575b6020831014612c8457565b634e487b7160e01b600052602260045260246000fd5b91607f1691612c79565b61020081019081106001600160401b0382111761049e57604052565b61012081019081106001600160401b0382111761049e57604052565b90601f801991011681019081106001600160401b0382111761049e57604052565b9060405191826000825492612d1184612c6a565b908184526001948581169081600014612d805750600114612d3d575b5050612d3b92500383612cdc565b565b9093915060005260209081600020936000915b818310612d68575050612d3b93508201013880612d2d565b85548884018501529485019487945091830191612d50565b915050612d3b94506020925060ff191682840152151560051b8201013880612d2d565b919082519283825260005b848110612dcf575050826000602080949584010152601f8019910116010190565b602081830181015184830182015201612dae565b9060098210156103c75752565b9060068210156103c75752565b6020908160408183019282815285518094520193019160005b828110612e24575050505090565b835185529381019392810192600101612e16565b81601f820112156106b9578035906001600160401b03821161049e5760405192612e6c601f8401601f191660200185612cdc565b828452602083830101116106b957816000926020809301838601378301015290565b6024359081151582036106b957565b8054821015612eb9576000526009602060002091020190600090565b634e487b7160e01b600052603260045260246000fd5b600435906001600160a01b03821682036106b957565b8054821015612eb95760005260206000200190600090565b6000546001600160a01b03163303612f1157565b60405163118cdaa760e01b8152336004820152602490fd5b15612f3057565b60405162461bcd60e51b815260206004820152602e60248201527f50726f6a65637452656769737472793a20427564676574206d7573742062652060448201526d067726561746572207468616e20360941b6064820152608490fd5b600019811461057a5760010190565b60098210156103c75752565b60068210156103c75752565b9060068110156103c75761ff0082549160081b169061ff001916179055565b8054600160401b81101561049e57612fef91600182018155612ee5565b819291549060031b91821b91600019901b1916179055565b1561300e57565b60405162461bcd60e51b815260206004820152602360248201527f50726f6a65637452656769737472793a20496e76616c69642070726f6a65637460448201526208125160ea1b6064820152608490fd5b1561306657565b60405162461bcd60e51b815260206004820152602260248201527f50726f6a65637452656769737472793a204e6f742070726f6a656374206f776e60448201526132b960f11b6064820152608490fd5b9190820180921161057a57565b156130ca57565b60405162461bcd60e51b815260206004820152602660248201527f50726f6a65637452656769737472793a2050726f6a656374206973206e6f74206044820152657075626c696360d01b6064820152608490fd5b6001600160401b03811161049e5760051b60200190565b9061313f8261311e565b61314c6040519182612cdc565b828152809261315d601f199161311e565b0190602036910137565b8051821015612eb95760209160051b010190565b60068110156103c757806131aa575060068110156103c757600181149081156131a2575090565b600491501490565b600181036131cb575060068110156103c757600281149081156131a2575090565b600281036132115750600681101590816103c75760038114918215613203575b82156131f657505090565b9091506103c75760041490565b5060058114915060006131eb565b60051461321e5750600090565b60068110156103c75760038114908115613236575090565b60029150149056fea2646970667358221220fa926e6bc863f8541940082177e7744bb022872e8a060e13ade455058391048b64736f6c63430008140033",
+  "deployedBytecode": "0x608080604052600436101561001357600080fd5b60003560e01c908163077a413814612c21575080630e617ad114612934578063107046bd146127fc578063117bb4fc14612789578063178faadf146120105780631aa22bba14611ef85780632d6c166114611dcf578063386ca89d14611d8a5780633f72679414611d3f57806352766d8014611a225780636cb0adba14611950578063715018a6146118f7578063812739a2146118d957806382c8b9f214611749578063888f83cf146116ff5780638da5cb5b146116d6578063a06564ec1461159f578063a14a989b14611560578063b2c6f00c14611521578063bc2e6e3a146114ad578063d09e5d1a14610d79578063d11d498b14610b91578063e6bc558f14610ab0578063f0f3f2c8146107d4578063f2fde38b14610746578063f33a0f37146106be5763f57aa13e1461014857600080fd5b346106b95760803660031901126106b9576001600160401b03606480358281116106b95761017a903690600401612e38565b906004351515806106ab575b61018f90613007565b60043560005260036020526101b860018060a01b0360036040600020015460101c16331461305f565b60243515158061068f575b1561063d576004356000526005602052604060002060243560005260205260ff604060002054166105e457815115610590576004356000526004602052604060002060001960243501602435811161057a5761021e91612e9d565b50600435600052600360205260406000209160058201546044351161051e5761024d60443560058501546130b6565b6004840154106104b4575060078101805460ff191660011790554260048201556044356006820155825193841161049e5761028b6008820154612c6a565b601f8111610457575b50602093601f81116001146103e85780600891600395966000916103dd575b508160011b9160001990871b1c1916179101555b600435600052600560205260406000206024356000526020526040600020600160ff1982541617905561030060443560058301546130b6565b600582015542600d82015501805460ff8160081c1660068110156103c75760011461037c575b827ffb15ee8621c32981c56af0c27e6fe61690ee459aa74c834c3890d9428bb3d348604051602435815242602082015260443560408201526080606082015280610377600435946080830190612da3565b0390a2005b6102009061ff001916179055604051600181526002602082015233907f34072acb75c09ae10925fc3e49e83b7032ac9d6ac265c11c1a1d8b3a00f4753b604060043592a33880610326565b634e487b7160e01b600052602160045260246000fd5b9050860151386102b3565b6008820160005260206000209460005b601f198316811061043f57508160039596600192600894601f19811610610427575b5050811b019101556102c7565b88015160001983891b60f8161c19169055388061041a565b858201518755600190960195602091820191016103f8565b600882016000526020600020601f860160051c810160208710610497575b601f830160051c8201811061048b575050610294565b60008155600101610475565b5080610475565b634e487b7160e01b600052604160045260246000fd5b6084907f6c64206578636565642070726f6a6563742062756467657400000000000000006040519162461bcd60e51b835260206004840152603860248401527f50726f6a65637452656769737472793a20546f74616c207370656e7420776f756044840152820152fd5b6084906e1b1b1bd8d85d195908189d5919d95d608a1b6040519162461bcd60e51b835260206004840152602f60248401527f50726f6a65637452656769737472793a205370656e74206578636565647320616044840152820152fd5b634e487b7160e01b600052601160045260246000fd5b60849066195c5d5a5c995960ca1b6040519162461bcd60e51b835260206004840152602760248401527f50726f6a65637452656769737472793a2045766964656e6365206861736820726044840152820152fd5b6084906b191e4818dbdb5c1b195d195960a21b6040519162461bcd60e51b835260206004840152602c60248401527f50726f6a65637452656769737472793a204d696c6573746f6e6520616c7265616044840152820152fd5b608490641b9948125160da1b6040519162461bcd60e51b835260206004840152602560248401527f50726f6a65637452656769737472793a20496e76616c6964206d696c6573746f6044840152820152fd5b50600435600052600460205260406000205460243511156101c3565b506002546004351115610186565b600080fd5b346106b9576020806003193601126106b9576001600160a01b036106e0612ecf565b1660005260088152604060002090604051908181845491828152019360005281600020916000905b82821061072f5761072b8561071f81890382612cdc565b60405191829182612dfd565b0390f35b835486529485019460019384019390910190610708565b346106b95760203660031901126106b95761075f612ecf565b610767612efd565b6001600160a01b039081169081156107bb57600054826bffffffffffffffffffffffff60a01b821617600055167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0600080a3005b604051631e4fbdf760e01b815260006004820152602490fd5b346106b95760203660031901126106b95760006101e06040516107f681612ca4565b82815260606020820152606060408201528260608201528260808201528260a08201528260c08201528260e0820152826101008201528261012082015282610140820152606061016082015282610180820152826101a0820152826101c0820152015260043580151580610aa4575b61086e90613007565b600052600360205260406000206040519061088882612ca4565b8054825261089860018201612cfd565b60208301526108a960028201612cfd565b604083015260038101546108c360ff821660608501612f9b565b6108d660ff8260081c1660808501612fa7565b60101c6001600160a01b031660a0830152600481015460c0830152600581015460e083015260068101546101008301526007810154610120830152600881015461014083015261092860098201612cfd565b610160830152600a810154610180830152600d60ff600b83015416159182156101a0850152600c8101546101c085015201546101e0830152801590610a8e575b8015610a7a575b610978906130c3565b604051809160208252805160208301526101e0610a496109c26109ac60208501516102006040880152610220870190612da3565b6040850151868203601f19016060880152612da3565b6109d460608501516080870190612de3565b6109e6608085015160a0870190612df0565b60018060a01b0360a08501511660c086015260c084015160e086015260e0840151610100860152610100840151610120860152610120840151610140860152610140840151610160860152610160840151601f1986830301610180870152612da3565b916101808101516101a08501526101a081015115156101c08501526101c08101518285015201516102008301520390f35b506000546001600160a01b0316331461096f565b5060a08101516001600160a01b03163314610968565b50600254811115610865565b346106b95760403660031901126106b957610ac9612ecf565b610ad1612e8e565b90610ada612efd565b6001600160a01b03168015610b3c57806000526006602052610b0c8260406000209060ff801983541691151516179055565b60405191151582527f2ca89697d004ea2d3eb322e383c08bf0978391315a84b01092922f4d8303e74560203393a3005b60405162461bcd60e51b815260206004820152602760248201527f50726f6a65637452656769737472793a20496e76616c696420656e74697479206044820152666164647265737360c81b6064820152608490fd5b346106b95760403660031901126106b95760243560043560068210156106b95780151580610d6d575b610bc390613007565b806000526003602052610bea60018060a01b0360036040600020015460101c16331461305f565b806000526003602052604060002091600383019060ff825460081c169360068510156103c757818514610d1e57610c21828661317b565b15610cc657610c3382610c6f94612fb3565b42600d8201556001821480610cba575b610caf575b6003821480610ca3575b610c97575b50610c656040518095612df0565b6020840190612df0565b7f34072acb75c09ae10925fc3e49e83b7032ac9d6ac265c11c1a1d8b3a00f4753b60403393a3005b60084291015584610c57565b50600881015415610c52565b426006820155610c48565b50600681015415610c43565b60405162461bcd60e51b815260206004820152602a60248201527f50726f6a65637452656769737472793a20496e76616c696420737461747573206044820152693a3930b739b4ba34b7b760b11b6064820152608490fd5b60405162461bcd60e51b815260206004820152602160248201527f50726f6a65637452656769737472793a2053746174757320756e6368616e67656044820152601960fa1b6064820152608490fd5b50600254811115610bba565b346106b95760a03660031901126106b9576024356001600160401b0381116106b957610da9903690600401612e38565b6044356001600160401b0381116106b957610dc8903690600401612e38565b9060043515158061149f575b610ddd90613007565b6004356000526003602052610e0660018060a01b0360036040600020015460101c16331461305f565b805115611441574260643511156113e557610e246084351515612f29565b600435600052600360205260ff60036040600020015460081c1660068110156103c757600181149081156113da575b501561136f5760043560005260046020526040600020549060018201821161057a5760405192610e8284612cc0565b600183018452816020850152604084015260643560608401526000608084015260843560a0840152600060c0840152600060e08401526040518060208101106001600160401b0360208301111761049e576020810160405260008152610100840152600435600052600460205260406000208054600160401b81101561049e57610f1191600182018155612e9d565b939093611359578051845560208101518051906001600160401b03821161049e578190610f416001880154612c6a565b601f8111611306575b50602090601f831160011461129457600092611289575b50508160011b916000199060031b1c19161760018501555b60408101518051906001600160401b03821161049e57610f9c6002870154612c6a565b601f8111611242575b50602090601f83116001146111ce57610100939291600091836111c3575b50508160011b916000199060031b1c19161760028601555b606081015160038601556080810151600486015560a0810151600586015560c0810151600686015561102260e08201511515600787019060ff801983541691151516179055565b01519283516001600160401b03811161049e576110426008830154612c6a565b601f8111611178575b506020601f82116001146110e457816110be9493926008927fa8304ebed06441bb13f6271b1a315727255515868c505df1a2b76da04fdcecca97986000926110d9575b50508160011b916000199060031b1c1916179101555b600160405194018452608060208501526080840190612da3565b916064356040820152608435606082015280600435930390a2005b01519050888061108e565b601f198216956008840160005260206000209660005b8181106111605750927fa8304ebed06441bb13f6271b1a315727255515868c505df1a2b76da04fdcecca9697600893600193836110be99989710611147575b505050811b019101556110a4565b015160001960f88460031b161c19169055888080611139565b838301518955600190980197602093840193016110fa565b600883016000526020600020601f830160051c810191602084106111b9575b601f0160051c01905b8181106111ad575061104b565b600081556001016111a0565b9091508190611197565b015190508780610fc3565b906002870160005260206000209160005b601f198516811061122a57509183916001936101009695601f19811610611211575b505050811b016002860155610fdb565b015160001960f88460031b161c19169055878080611201565b919260206001819286850151815501940192016111df565b600287016000526020600020601f840160051c810160208510611282575b601f830160051c82018110611276575050610fa5565b60008155600101611260565b5080611260565b015190508680610f61565b9250600187016000526020600020906000935b601f19841685106112eb576001945083601f198116106112d2575b505050811b016001850155610f79565b015160001960f88460031b161c191690558680806112c2565b818101518355602094850194600190930192909101906112a7565b909150600187016000526020600020601f840160051c810160208510611352575b90849392915b601f830160051c82018110611343575050610f4a565b6000815585945060010161132d565b5080611327565b634e487b7160e01b600052600060045260246000fd5b60405162461bcd60e51b815260206004820152603860248201527f50726f6a65637452656769737472793a2050726f6a656374206d75737420626560448201527f20617070726f766564206f7220696e2070726f677265737300000000000000006064820152608490fd5b600291501483610e53565b60405162461bcd60e51b815260206004820152602e60248201527f50726f6a65637452656769737472793a205461726765742064617465206d757360448201526d7420626520696e2066757475726560901b6064820152608490fd5b60405162461bcd60e51b815260206004820152603060248201527f50726f6a65637452656769737472793a204d696c6573746f6e65207469746c6560448201526f2063616e6e6f7420626520656d70747960801b6064820152608490fd5b506002546004351115610dd4565b346106b95760403660031901126106b9576004356114c9612e8e565b906114d2612efd565b80151580611515575b6114e490613007565b600052600360205261150a604060002091600b83019060ff801983541691151516179055565b600d42910155600080f35b506002548111156114db565b346106b95761152f36612c54565b906000526007602052604060002080548210156106b95760209161155291612ee5565b90546040519160031b1c8152f35b346106b95760203660031901126106b9576001600160a01b03611581612ecf565b166000526006602052602060ff604060002054166040519015158152f35b346106b95760603660031901126106b95760243560043560068210156106b957604435906115cb612efd565b801515806116ca575b6115dd90613007565b8060005260036020526040600020926003840160ff815460081c169160068310156103c757828103611677575b50505060048301918254928382141580611669575b61162c575b42600d860155005b81905560405192835260208301527fd95ec68e4659aae27f7a269da9a83bf4eb675f048d4800f45018f05ca7805d7960403393a381808080611624565b50600585015482101561161f565b6116848161169b93612fb3565b6116916040518094612df0565b6020830190612df0565b817f34072acb75c09ae10925fc3e49e83b7032ac9d6ac265c11c1a1d8b3a00f4753b60403393a383808061160a565b506002548111156115d4565b346106b95760003660031901126106b9576000546040516001600160a01b039091168152602090f35b346106b95760403660031901126106b957611718612ecf565b6001600160a01b03166000908152600860205260409020805460243591908210156106b95760209161155291612ee5565b346106b95761175736612c54565b90801515806118cd575b61176a90613007565b80600052600360205260018060a01b038060036040600020015460101c1633149081156118bf575b5015611861576117a3821515612f29565b806000526003602052604060002091600583015481106118005760048301928184549455600d4291015560405192835260208301527fd95ec68e4659aae27f7a269da9a83bf4eb675f048d4800f45018f05ca7805d7960403393a3005b60405162461bcd60e51b815260206004820152603360248201527f50726f6a65637452656769737472793a204e657720627564676574206c657373604482015272081d1a185b88185b1c9958591e481cdc195b9d606a1b6064820152608490fd5b60405162461bcd60e51b815260206004820152603060248201527f50726f6a65637452656769737472793a204e6f7420617574686f72697a65642060448201526f1d1bc81d5c19185d1948189d5919d95d60821b6064820152608490fd5b905060005416331483611792565b50600254811115611761565b346106b95760003660031901126106b9576020600254604051908152f35b346106b95760003660031901126106b957611910612efd565b600080546001600160a01b0319811682556001600160a01b03167f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e08280a3005b346106b95761195e36612c54565b90600052600460205260406000209081548110156106b95761197f91612e9d565b50805461072b61199160018401612cfd565b9261199e60028201612cfd565b600382015491600481015460058201546006830154916119f86119cb600860ff6007880154169601612cfd565b956119ea6040519b8c9b8c5260208c61012091829101528c0190612da3565b908a820360408c0152612da3565b956060890152608088015260a087015260c0860152151560e0850152838203610100850152612da3565b346106b95760203660031901126106b957600435151580611d31575b611a4790613007565b60043560005260036020526040600020604051611a6381612ca4565b81548152611a7360018301612cfd565b6020820152611a8460028301612cfd565b60408201526003820154611a9e60ff821660608401612f9b565b611ab160ff8260081c1660808401612fa7565b60101c6001600160a01b031660a0820152600482015460c0820152600582015460e0820152600682015461010082015260078201546101208201526008820154610140820152611b0360098301612cfd565b610160820152600a82015461018082015260ff600b830154161591600d831591826101a0850152600c8101546101c085015201546101e083015291611d1a575b508015611d06575b611b54906130c3565b60043560005260046020526040600020805490611b708261311e565b91611b7e6040519384612cdc565b80835260208301809260005260206000206000915b838310611c7857848660405191829160208301906020845251809152604083019060408160051b85010192916000905b828210611bd257505050500390f35b91936001919395506020611c688192603f198a820301865288519081518152610100611c22611c108685015161012088860152610120850190612da3565b60408501518482036040860152612da3565b92606081015160608401526080810151608084015260a081015160a084015260c081015160c084015260e0810151151560e0840152015190610100818403910152612da3565b9601920192018594939192611bc3565b60096020600192604051611c8b81612cc0565b85548152611c9a858701612cfd565b83820152611caa60028701612cfd565b60408201526003860154606082015260048601546080820152600586015460a0820152600686015460c082015260ff600787015416151560e0820152611cf260088701612cfd565b610100820152815201920192019190611b93565b506000546001600160a01b03163314611b4b565b60a001516001600160a01b03163314905081611b43565b506002546004351115611a3e565b346106b957611d4d36612c54565b9080151580611d7e575b611d6090613007565b6000526003602052604060002090600a820155600d42910155600080f35b50600254811115611d57565b346106b95760003660031901126106b9576040517f00000000000000000000000000000000000000000000000000000000000000006001600160a01b03168152602090f35b346106b95760003660031901126106b95760008060008060009160019384956002958654965b87891115611e2457505060c09650604051958652602086015260408501526060840152608083015260a0820152f35b90919492939795866000526003958660205260406000209660ff8189015460081c1660068110156103c757808603611e93575050611e89916005611e7a611e6d611e8394612f8c565b975b60048b0154906130b6565b980154906130b6565b96612f8c565b9793929190611df5565b95969195808503611ebb575050611e89916005611e7a611eb5611e8394612f8c565b98611e6f565b96919614611ed6575b611e89916005611e7a611e8393611e6f565b98611e89916005611e7a611eec611e8394612f8c565b9c935050509150611ec4565b346106b9576020806003193601126106b957600660043581811015806106b95760025490611f2582613135565b9460009460015b84811115611f7c578787611f3f81613135565b9160005b828110611f58576040518061072b8682612dfd565b80611f66611f779284613167565b51611f718287613167565b52612f8c565b611f43565b80600052600380845260ff8581836040600020015460081c16906103c757848110156103c75788149182611fdb575b5050611fc0575b611fbb90612f8c565b611f2c565b95611fd38188611f71611fbb948c613167565b969050611fb2565b909150826000528452600b60406000200154168015611ffc575b8980611fab565b506000546001600160a01b03163314611ff5565b346106b95760e03660031901126106b9576004356001600160401b0381116106b957612040903690600401612e38565b6024356001600160401b0381116106b95761205f903690600401612e38565b600960443510156106b95760a4356001600160401b0381116106b957612089903690600401612e38565b9060c43580151581036106b95733600052600660205260ff604060002054161561272a576002600154146127185760026001558351156126c4576120d06064351515612f29565b42608435111561266b576120e5600254612f8c565b9283600255604051926120f784612ca4565b848452856020850152604084015261211460443560608501612f9b565b600060808401523360a084015260643560c0840152600060e084015260006101008401526084356101208401526000610140840152610160830152600061018083015215156101a0820152426101c0820152426101e08201528160005260036020526040600020908051825560208101518051906001600160401b03821161049e5781906121a56001860154612c6a565b601f8111612618575b50602090601f83116001146125a65760009261259b575b50508160011b916000199060031b1c19161760018301555b60408101518051906001600160401b03821161049e5781906122026002860154612c6a565b601f8111612548575b50602090601f83116001146124d6576000926124cb575b50508160011b916000199060031b1c19161760028301555b606081015160098110156103c75760ff80196003850154169116176003830155608081015160068110156103c7576122759060038401612fb3565b60a081015160038301805462010000600160b01b03191660109290921b62010000600160b01b031691909117905560c0810151600483015560e081015160058301556101008101516006830155610120810151600783015561014081015160088301556101608101518051906001600160401b03821161049e576122fc6009850154612c6a565b601f8111612484575b50602090601f831160011461240e579180600d94926101e094600092612403575b50508160011b916000199060031b1c19161760098501555b610180810151600a8501556123696101a08201511515600b86019060ff801983541691151516179055565b6101c0810151600c85015501519101556044356000526007602052612392816040600020612fd2565b3360005260086020526123a9816040600020612fd2565b7fd4e81b4ac16013f47ac8a712d1babfa1cd6fdbd92951ef6a78c3688cbda631276123df60405193606085526060850190612da3565b926123ef60208201604435612de3565b60643560408201528033940390a360018055005b015190508880612326565b906009850160005260206000209160005b601f198516811061246c575092600d94926001926101e09583601f19811610612453575b505050811b01600985015561233e565b015160001960f88460031b161c19169055888080612443565b9192602060018192868501518155019401920161241f565b600985016000526020600020601f840160051c8101602085106124c4575b601f830160051c820181106124b8575050612305565b600081556001016124a2565b50806124a2565b015190508680612222565b9250600285016000526020600020906000935b601f198416851061252d576001945083601f19811610612514575b505050811b01600283015561223a565b015160001960f88460031b161c19169055868080612504565b818101518355602094850194600190930192909101906124e9565b909150600285016000526020600020601f840160051c810160208510612594575b90849392915b601f830160051c8201811061258557505061220b565b6000815585945060010161256f565b5080612569565b0151905086806121c5565b9250600185016000526020600020906000935b601f19841685106125fd576001945083601f198116106125e4575b505050811b0160018301556121dd565b015160001960f88460031b161c191690558680806125d4565b818101518355602094850194600190930192909101906125b9565b909150600185016000526020600020601f840160051c810160208510612664575b90849392915b601f830160051c820181106126555750506121ae565b6000815585945060010161263f565b5080612639565b60405162461bcd60e51b815260206004820152602b60248201527f50726f6a65637452656769737472793a20456e642064617465206d757374206260448201526a6520696e2066757475726560a81b6064820152608490fd5b60405162461bcd60e51b815260206004820152602660248201527f50726f6a65637452656769737472793a205469746c652063616e6e6f7420626560448201526520656d70747960d01b6064820152608490fd5b604051633ee5aeb560e01b8152600490fd5b60405162461bcd60e51b815260206004820152603160248201527f50726f6a65637452656769737472793a204e6f7420617574686f72697a656420604482015270676f7665726e6d656e7420656e7469747960781b6064820152608490fd5b346106b9576020806003193601126106b95760043560098110156106b95760005260078152604060002090604051908181845491828152019360005281600020916000905b8282106127e55761072b8561071f81890382612cdc565b8354865294850194600193840193909101906127ce565b346106b95760203660031901126106b9576004356000526003602052604060002080546001820161282c90612cfd565b9161283960028201612cfd565b600382015491600481015460058201549360068301549060078401546008850154906009860161286890612cfd565b93600a87015498600b88015460ff1696600c89015498600d0154996040519d8e9d8e528d61020090816020820152016128a091612da3565b8d810360408f01526128b191612da3565b956128c260608e0160ff8316612de3565b6128d660808e0160ff600884901c16612df0565b60101c6001600160a01b031660a08d015260c08c015260e08b01526101008a015261012089015261014088015286810361016088015261291591612da3565b9361018086015215156101a08501526101c08401526101e08301520390f35b346106b95760203660031901126106b957600435151580612c13575b61295990613007565b600435600052600360205260406000206040519061297682612ca4565b8054825261298660018201612cfd565b602083015261299760028201612cfd565b604083015260038101546129b160ff821660608501612f9b565b6129c460ff8260081c1660808501612fa7565b60101c6001600160a01b031660a0830152600481015460c0830152600581015460e0830152600681015461010083015260078101546101208301526008810154610140830152612a1660098201612cfd565b610160830152600a81015461018083015260ff600b820154161590600d821591826101a0860152600c8101546101c086015201546101e084015290612bfd575b8015612be9575b612a66906130c3565b600435600052600460205260406000208054612a818161311e565b91612a8f6040519384612cdc565b818352602083019060005260206000206000915b838310612b5b5785600086815b8151811015612af05760e0612ac58284613167565b510151612adb575b612ad690612f8c565b612ab0565b91612ae8612ad691612f8c565b929050612acd565b5060c083015115612b4f5760e0830151926127109384810294818604149015171561057a5760c001518015612b395760609304905b519160405192835260208301526040820152f35b634e487b7160e01b600052601260045260246000fd5b60609250600090612b25565b60096020600192604051612b6e81612cc0565b85548152612b7d858701612cfd565b83820152612b8d60028701612cfd565b60408201526003860154606082015260048601546080820152600586015460a0820152600686015460c082015260ff600787015416151560e0820152612bd560088701612cfd565b610100820152815201920192019190612aa3565b506000546001600160a01b03163314612a5d565b5060a08101516001600160a01b03163314612a56565b506002546004351115612950565b346106b957602090612c3236612c54565b9060005260058352604060002090600052825260ff6040600020541615158152f35b60409060031901126106b9576004359060243590565b90600182811c92168015612c9a575b6020831014612c8457565b634e487b7160e01b600052602260045260246000fd5b91607f1691612c79565b61020081019081106001600160401b0382111761049e57604052565b61012081019081106001600160401b0382111761049e57604052565b90601f801991011681019081106001600160401b0382111761049e57604052565b9060405191826000825492612d1184612c6a565b908184526001948581169081600014612d805750600114612d3d575b5050612d3b92500383612cdc565b565b9093915060005260209081600020936000915b818310612d68575050612d3b93508201013880612d2d565b85548884018501529485019487945091830191612d50565b915050612d3b94506020925060ff191682840152151560051b8201013880612d2d565b919082519283825260005b848110612dcf575050826000602080949584010152601f8019910116010190565b602081830181015184830182015201612dae565b9060098210156103c75752565b9060068210156103c75752565b6020908160408183019282815285518094520193019160005b828110612e24575050505090565b835185529381019392810192600101612e16565b81601f820112156106b9578035906001600160401b03821161049e5760405192612e6c601f8401601f191660200185612cdc565b828452602083830101116106b957816000926020809301838601378301015290565b6024359081151582036106b957565b8054821015612eb9576000526009602060002091020190600090565b634e487b7160e01b600052603260045260246000fd5b600435906001600160a01b03821682036106b957565b8054821015612eb95760005260206000200190600090565b6000546001600160a01b03163303612f1157565b60405163118cdaa760e01b8152336004820152602490fd5b15612f3057565b60405162461bcd60e51b815260206004820152602e60248201527f50726f6a65637452656769737472793a20427564676574206d7573742062652060448201526d067726561746572207468616e20360941b6064820152608490fd5b600019811461057a5760010190565b60098210156103c75752565b60068210156103c75752565b9060068110156103c75761ff0082549160081b169061ff001916179055565b8054600160401b81101561049e57612fef91600182018155612ee5565b819291549060031b91821b91600019901b1916179055565b1561300e57565b60405162461bcd60e51b815260206004820152602360248201527f50726f6a65637452656769737472793a20496e76616c69642070726f6a65637460448201526208125160ea1b6064820152608490fd5b1561306657565b60405162461bcd60e51b815260206004820152602260248201527f50726f6a65637452656769737472793a204e6f742070726f6a656374206f776e60448201526132b960f11b6064820152608490fd5b9190820180921161057a57565b156130ca57565b60405162461bcd60e51b815260206004820152602660248201527f50726f6a65637452656769737472793a2050726f6a656374206973206e6f74206044820152657075626c696360d01b6064820152608490fd5b6001600160401b03811161049e5760051b60200190565b9061313f8261311e565b61314c6040519182612cdc565b828152809261315d601f199161311e565b0190602036910137565b8051821015612eb95760209160051b010190565b60068110156103c757806131aa575060068110156103c757600181149081156131a2575090565b600491501490565b600181036131cb575060068110156103c757600281149081156131a2575090565b600281036132115750600681101590816103c75760038114918215613203575b82156131f657505090565b9091506103c75760041490565b5060058114915060006131eb565b60051461321e5750600090565b60068110156103c75760038114908115613236575090565b60029150149056fea2646970667358221220fa926e6bc863f8541940082177e7744bb022872e8a060e13ade455058391048b64736f6c63430008140033",
+  "devdoc": {
+    "author": "CitiProof Team",
+    "details": "Manages all government projects and their lifecycle",
+    "errors": {
+      "OwnableInvalidOwner(address)": [
+        {
+          "details": "The owner is not a valid owner account. (eg. `address(0)`)"
+        }
+      ],
+      "OwnableUnauthorizedAccount(address)": [
+        {
+          "details": "The caller account is not authorized to perform an operation."
+        }
+      ],
+      "ReentrancyGuardReentrantCall()": [
+        {
+          "details": "Unauthorized reentrant call."
+        }
+      ]
+    },
+    "kind": "dev",
+    "methods": {
+      "addProjectMilestone(uint256,string,string,uint256,uint256)": {
+        "details": "Add milestone to project"
+      },
+      "completeProjectMilestone(uint256,uint256,uint256,string)": {
+        "details": "Complete project milestone"
+      },
+      "createProject(string,string,uint8,uint256,uint256,string,bool)": {
+        "details": "Create a new government project"
+      },
+      "owner()": {
+        "details": "Returns the address of the current owner."
+      },
+      "renounceOwnership()": {
+        "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+      },
+      "transferOwnership(address)": {
+        "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+      },
+      "updateCitizenSupportScore(uint256,uint256)": {
+        "details": "Update citizen support score (called by voting contract)"
+      },
+      "updateProjectBudget(uint256,uint256)": {
+        "details": "Update project budget (owner or admin only)"
+      },
+      "updateProjectStatus(uint256,uint8)": {
+        "details": "Update project status"
+      }
+    },
+    "title": "GovernmentProjectRegistry",
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {},
+    "version": 1
+  },
+  "storageLayout": {
+    "storage": [
+      {
+        "astId": 8,
+        "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+        "label": "_owner",
+        "offset": 0,
+        "slot": "0",
+        "type": "t_address"
+      },
+      {
+        "astId": 188,
+        "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+        "label": "_status",
+        "offset": 0,
+        "slot": "1",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 2730,
+        "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+        "label": "_projectIdCounter",
+        "offset": 0,
+        "slot": "2",
+        "type": "t_uint256"
+      },
+      {
+        "astId": 2735,
+        "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+        "label": "projects",
+        "offset": 0,
+        "slot": "3",
+        "type": "t_mapping(t_uint256,t_struct(Project)2728_storage)"
+      },
+      {
+        "astId": 2741,
+        "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+        "label": "projectMilestones",
+        "offset": 0,
+        "slot": "4",
+        "type": "t_mapping(t_uint256,t_array(t_struct(ProjectMilestone)2693_storage)dyn_storage)"
+      },
+      {
+        "astId": 2747,
+        "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+        "label": "milestoneCompleted",
+        "offset": 0,
+        "slot": "5",
+        "type": "t_mapping(t_uint256,t_mapping(t_uint256,t_bool))"
+      },
+      {
+        "astId": 2751,
+        "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+        "label": "authorizedGovernmentEntities",
+        "offset": 0,
+        "slot": "6",
+        "type": "t_mapping(t_address,t_bool)"
+      },
+      {
+        "astId": 2756,
+        "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+        "label": "categoryProjects",
+        "offset": 0,
+        "slot": "7",
+        "type": "t_mapping(t_uint256,t_array(t_uint256)dyn_storage)"
+      },
+      {
+        "astId": 2761,
+        "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+        "label": "governmentEntityProjects",
+        "offset": 0,
+        "slot": "8",
+        "type": "t_mapping(t_address,t_array(t_uint256)dyn_storage)"
+      }
+    ],
+    "types": {
+      "t_address": {
+        "encoding": "inplace",
+        "label": "address",
+        "numberOfBytes": "20"
+      },
+      "t_array(t_struct(ProjectMilestone)2693_storage)dyn_storage": {
+        "base": "t_struct(ProjectMilestone)2693_storage",
+        "encoding": "dynamic_array",
+        "label": "struct GovernmentProjectRegistry.ProjectMilestone[]",
+        "numberOfBytes": "32"
+      },
+      "t_array(t_uint256)dyn_storage": {
+        "base": "t_uint256",
+        "encoding": "dynamic_array",
+        "label": "uint256[]",
+        "numberOfBytes": "32"
+      },
+      "t_bool": {
+        "encoding": "inplace",
+        "label": "bool",
+        "numberOfBytes": "1"
+      },
+      "t_enum(ProjectCategory)2674": {
+        "encoding": "inplace",
+        "label": "enum GovernmentProjectRegistry.ProjectCategory",
+        "numberOfBytes": "1"
+      },
+      "t_enum(ProjectStatus)2664": {
+        "encoding": "inplace",
+        "label": "enum GovernmentProjectRegistry.ProjectStatus",
+        "numberOfBytes": "1"
+      },
+      "t_mapping(t_address,t_array(t_uint256)dyn_storage)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => uint256[])",
+        "numberOfBytes": "32",
+        "value": "t_array(t_uint256)dyn_storage"
+      },
+      "t_mapping(t_address,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_address",
+        "label": "mapping(address => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_uint256,t_array(t_struct(ProjectMilestone)2693_storage)dyn_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct GovernmentProjectRegistry.ProjectMilestone[])",
+        "numberOfBytes": "32",
+        "value": "t_array(t_struct(ProjectMilestone)2693_storage)dyn_storage"
+      },
+      "t_mapping(t_uint256,t_array(t_uint256)dyn_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => uint256[])",
+        "numberOfBytes": "32",
+        "value": "t_array(t_uint256)dyn_storage"
+      },
+      "t_mapping(t_uint256,t_bool)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => bool)",
+        "numberOfBytes": "32",
+        "value": "t_bool"
+      },
+      "t_mapping(t_uint256,t_mapping(t_uint256,t_bool))": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => mapping(uint256 => bool))",
+        "numberOfBytes": "32",
+        "value": "t_mapping(t_uint256,t_bool)"
+      },
+      "t_mapping(t_uint256,t_struct(Project)2728_storage)": {
+        "encoding": "mapping",
+        "key": "t_uint256",
+        "label": "mapping(uint256 => struct GovernmentProjectRegistry.Project)",
+        "numberOfBytes": "32",
+        "value": "t_struct(Project)2728_storage"
+      },
+      "t_string_storage": {
+        "encoding": "bytes",
+        "label": "string",
+        "numberOfBytes": "32"
+      },
+      "t_struct(Project)2728_storage": {
+        "encoding": "inplace",
+        "label": "struct GovernmentProjectRegistry.Project",
+        "members": [
+          {
+            "astId": 2695,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "projectId",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 2697,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "title",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 2699,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "description",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 2702,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "category",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_enum(ProjectCategory)2674"
+          },
+          {
+            "astId": 2705,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "status",
+            "offset": 1,
+            "slot": "3",
+            "type": "t_enum(ProjectStatus)2664"
+          },
+          {
+            "astId": 2707,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "governmentEntity",
+            "offset": 2,
+            "slot": "3",
+            "type": "t_address"
+          },
+          {
+            "astId": 2709,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "totalBudget",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 2711,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "budgetSpent",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 2713,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "startDate",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 2715,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "estimatedEndDate",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 2717,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "actualEndDate",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 2719,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "documentationHash",
+            "offset": 0,
+            "slot": "9",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 2721,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "citizenSupportScore",
+            "offset": 0,
+            "slot": "10",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 2723,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "isPublic",
+            "offset": 0,
+            "slot": "11",
+            "type": "t_bool"
+          },
+          {
+            "astId": 2725,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "creationTimestamp",
+            "offset": 0,
+            "slot": "12",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 2727,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "lastUpdateTimestamp",
+            "offset": 0,
+            "slot": "13",
+            "type": "t_uint256"
+          }
+        ],
+        "numberOfBytes": "448"
+      },
+      "t_struct(ProjectMilestone)2693_storage": {
+        "encoding": "inplace",
+        "label": "struct GovernmentProjectRegistry.ProjectMilestone",
+        "members": [
+          {
+            "astId": 2676,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "milestoneId",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 2678,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "title",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 2680,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "description",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_string_storage"
+          },
+          {
+            "astId": 2682,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "targetDate",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 2684,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "completionDate",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 2686,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "budgetAllocated",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 2688,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "budgetSpent",
+            "offset": 0,
+            "slot": "6",
+            "type": "t_uint256"
+          },
+          {
+            "astId": 2690,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "isCompleted",
+            "offset": 0,
+            "slot": "7",
+            "type": "t_bool"
+          },
+          {
+            "astId": 2692,
+            "contract": "contracts/GovernmentProjectRegistry.sol:GovernmentProjectRegistry",
+            "label": "evidenceHash",
+            "offset": 0,
+            "slot": "8",
+            "type": "t_string_storage"
+          }
+        ],
+        "numberOfBytes": "288"
+      },
+      "t_uint256": {
+        "encoding": "inplace",
+        "label": "uint256",
+        "numberOfBytes": "32"
+      }
+    }
+  }
+}
