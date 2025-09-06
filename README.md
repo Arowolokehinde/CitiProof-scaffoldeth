@@ -99,4 +99,4 @@ CitiProof addresses key challenges in public project management:
 ## Join the Movement  
 CitiProof is more than a platform—it's a movement to redefine civic engagement. By combining blockchain technology with citizen participation, we can build a future where public projects are transparent, accountable, and community-driven.  
 
-**Empower your community with CitiProof.**  
+**Empower your community with CitiProof.**
