@@ -1,80 +1,102 @@
-# 🏗 Scaffold-ETH 2
+# CitiProof: Decentralized Civic Engagement Platform  
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+CitiProof is a blockchain-powered platform designed to enhance transparency, accountability, and citizen participation in public projects. By leveraging Ethereum Name Service (ENS) and Ethereum Foundation Passport (EFP), CitiProof ensures one-person-one-account identity verification, enabling citizens, governments, and donors to collaborate effectively on civic initiatives.  
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+-- video submission - https://youtu.be/wEAKnkAUfP4
 
-⚙️ Built using NextJS, RainbowKit, Hardhat, Wagmi, Viem, and Typescript.
+## Why CitiProof?  
+CitiProof addresses key challenges in public project management:  
+- **Transparency**: Track funds and progress in real time.  
+- **Accountability**: Verify milestones and hold stakeholders responsible.  
+- **Citizen Engagement**: Empower citizens to vote, verify, and report issues.  
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+## How It Works  
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+### 1. Citizen Onboarding  
+- Citizens connect their wallets and verify their identity using EFP.  
+- Each citizen receives an ENS subname (e.g., `ama.citiproof.eth`) tied to their EFP.  
 
-## Requirements
+### 2. Government / NGO Project Posting  
+- Ministries, NGOs, or contractors register projects with ENS names (e.g., `accra-road.eth`).  
+- Project details (funding goal, milestones) are stored on-chain.  
+- Project wallets are named multisigs (e.g., `ghana-infra-fund.eth`).  
 
-Before you begin, you need to install the following tools:
+### 3. Community Voting (Prioritization Stage)  
+- Citizens review and vote on projects using EFP-verified wallets.  
+- Projects with the highest votes move to the execution phase.  
 
-- [Node (>= v20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
+### 4. Project Execution  
+- Contractors receive milestone-based funds from ENS multisig wallets.  
+- Funds unlock only when milestones are verified.  
 
-## Quickstart
+### 5. Citizen Verification of Progress  
+- Citizens submit proofs (photos, geotags, IoT data, drone feeds) tied to their ENS subnames.  
+- Verified submissions earn NFT Audit Badges.  
 
-To get started with Scaffold-ETH 2, follow the steps below:
+### 6. Issue Reporting  
+- Citizens report problems (e.g., potholes, broken streetlights) linked to responsible ENS names (e.g., `power-ghana.eth`).  
+- Only EFP-verified users can post, reducing spam and fake reports.  
 
-1. Install dependencies if it was skipped in CLI:
+### 7. Transparency Dashboard  
+- Public dashboard displays:  
+  - Active projects and milestones.  
+  - Issue board (citizen reports).  
+  - ENS-named wallets and fund flows.  
+- Citizens and donors can track progress in real time.  
 
-```
-cd my-dapp-example
-yarn install
-```
+### 8. Reputation & Recognition  
+- Citizens earn ENS-linked NFT badges for contributions.  
+- Badges and attestations are stored in EFP, creating a portable civic reputation.  
+- Active verifiers gain higher credibility in voting and audits.  
 
-2. Run a local network in the first terminal:
+### 9. Donor / Diaspora Funding  
+- Donors contribute to ENS multisig wallets.  
+- Funds are released only after verified milestones.  
+- Donors can review ENS + EFP audit proofs before contributing.  
 
-```
-yarn chain
-```
+## Technical Overview  
 
-This command starts a local Ethereum network using Hardhat. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `packages/hardhat/hardhat.config.ts`.
+### Frontend (React / Next.js / Tailwind)  
+- **Wallet Connection**: Wagmi + RainbowKit (or Web3Modal).  
+- **EFP Integration**: UI for Passport credential verification.  
+- **ENS Resolution**: Display ENS names for citizens, ministries, and wallets.  
+- **Project Dashboard**:  
+  - List projects with details (title, ENS name, funding goal, votes, status).  
+  - Voting button (1 wallet = 1 vote via EFP).  
+- **Issue Reporting**:  
+  - Simple form for description and photo upload (to IPFS).  
+  - Auto-tagged to ENS ministry.  
+- **Verification Page**:  
+  - Citizens upload proofs for milestones.  
+  - Display earned NFT badges.  
+- **Transparency Dashboard**:  
+  - Project progress bar.  
+  - Wallet balances (from multisig).  
+  - Issues board.  
 
-3. On a second terminal, deploy the test contract:
+### Smart Contracts (Solidity on Sepolia)  
+- **Identity & Subnames**:  
+  - ENS subname issuance (`citiproof.eth`).  
+  - Map ENS → EFP Passport for identity validation.  
+- **Project Registry**:  
+  - Post new projects (name, metadataHash, milestones, wallet).  
+  - Store ENS project names (e.g., `tamale-road.eth`).  
+- **Voting Contract**:  
+  - Citizens vote on projects.  
+  - Restrict votes to EFP-verified addresses.  
+  - Track vote counts.  
+- **Funding Escrow**:  
+  - Named multisig wallets (e.g., `ghana-infra-fund.eth`).  
+  - Hold funds until milestones are verified.  
+  - Release payments step by step.  
+- **Audit Badge (ERC-721)**:  
+  - Mint NFT Audit Badges for milestone verification or issue reporting.  
+  - Metadata includes ENS + proof link.  
+- **Issue Reporting**:  
+  - Citizens submit issue hashes (IPFS).  
+  - Link reports to ministry ENS names.  
 
-```
-yarn deploy
-```
+## Join the Movement  
+CitiProof is more than a platform—it's a movement to redefine civic engagement. By combining blockchain technology with citizen participation, we can build a future where public projects are transparent, accountable, and community-driven.  
 
-This command deploys a test smart contract to the local network. The contract is located in `packages/hardhat/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/hardhat/deploy` to deploy the contract to the network. You can also customize the deploy script.
-
-4. On a third terminal, start your NextJS app:
-
-```
-yarn start
-```
-
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
-
-Run smart contract test with `yarn hardhat:test`
-
-- Edit your smart contracts in `packages/hardhat/contracts`
-- Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
-- Edit your deployment scripts in `packages/hardhat/deploy`
-
-
-## Documentation
-
-Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
-
-To know more about its features, check out our [website](https://scaffoldeth.io).
-
-## Contributing to Scaffold-ETH 2
-
-We welcome contributions to Scaffold-ETH 2!
-
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+**Empower your community with CitiProof.**  
