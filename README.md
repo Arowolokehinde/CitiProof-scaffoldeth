@@ -2,7 +2,7 @@
 
 CitiProof is a blockchain-powered platform designed to enhance transparency, accountability, and citizen participation in public projects. By leveraging Ethereum Name Service (ENS) and Ethereum Foundation Passport (EFP), CitiProof ensures one-person-one-account identity verification, enabling citizens, governments, and donors to collaborate effectively on civic initiatives.  
 
--- video submission - https://youtu.be/wEAKnkAUfP4
+
 
 ## Why CitiProof?  
 CitiProof addresses key challenges in public project management:  
